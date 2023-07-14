@@ -71,7 +71,7 @@ exports.viewMarqueeToAdmin = async (req, res) => {
 
         connection = await pool.connect()
 
-        const check = ` SELECT marquee_id as marqueeid,marquee_status as homevisi,info as text, url, color as backgroundcolor,text_color  as textcolor, web_visibility as othervisi,to_char(date_creation,'YY/MM/DD') as creationdate FROM marquee ORDER BY date_creation DESC`
+        const check = ` SELECT marquee_id as marqueeid,marquee_status as homevisi,info as text, url, color as backgroundcolor,text_color  as textcolor, web_visibility as othervisi,to_char(date_creation,'YY/MM/DD') as creationdate FROM marquee ORDER BY id DESC`
 
         const result = await connection.query(check)
 
