@@ -1,6 +1,9 @@
+const { contextsKey } = require("express-validator/src/base");
 const pool = require("../config/pool")
 const generateNumericValue = require("../generator/NumericId")
 const { v4: uuidv4 } = require('uuid');
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 
 exports.CreateCarousel=async(req,res)=>{
@@ -61,7 +64,37 @@ exports.viewCarouselToAdmin=async(req,res)=>{
     let connection
     try {
         connection=await pool.connect()
-        const check='SELECT c_id,'
+        const check=`SELECT c_id,c_status,path,to_char(upload_date,'YYYY/MM/DD') as uploaddate FROM home_carousel`
+        const result=await connection.query(check)
+        if (result.rowCount===0) {
+            return res.status(404).send({message:"No Data Found"})
+        }
+        let images=[]
+        for (const row of result.rows) {
+            const url=row.path
+            const Key='home_carousel'+url.substring(url.lastIndexOf('/')+1)
+            const clint=new S3Client({
+                region:process.env.BUCKET_REGION,
+                credentials:{
+                    accessKeyId:process.env.ACCESS_KEY,
+                    secretAccessKey:process.env.SECRET_ACCESS_KEY,
+
+                }
+            })
+            const commandCenter=new GetObjectCommand({
+                Bucket:process.env.BUCKET_NAME,
+                Key:Key
+            })
+            const imageurl=await getSignedUrl(clint,commandCenter,{expiresIn:3600})
+            const imagedata={
+                imageurl,
+                CId: row.c_Id,
+                cstatus:row.c_status,
+                uploaddate:row.uploaddate
+            }
+            images.push(imagedata)
+        }
+        return res.status(200).send({images})
     } catch (error)  {
         console.error(error)
         return res.status(500).send({message:'Internal Server Error!.'})
