@@ -10,7 +10,7 @@ const { createAlbum, viewAlbum } = require('../../controllers/album')
 const { createProject, viewProject, updateSoiProject, deleteProject, viewProjectForWeb } = require('../../controllers/soi_project')
 const { HeaderCreate, viewHeader, updateVisibility, updateHeader } = require('../header')
 const { CreateMarquee, viewMarqueeToAdmin, editMarqueeDetails, editMarqueeVisibility, viewMarqueeForWeb, deleteMarque } = require('../Marquee')
-const { CreateCarousel, viewCarouselToAdmin } = require('../Carousel')
+const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, deleteCarousel } = require('../Carousel')
 
 const router = express.Router()
 
@@ -65,5 +65,7 @@ router.delete('/delete_marquee',deleteMarque)
 
 router.post('/upload_carousel',homeCarousel,CreateCarousel)
 router.get('/carousel_admin',viewCarouselToAdmin)
-
+router.patch('/carousel_visibility',visibilityedit)
+router.get('/view_carousel', viewCarouselToWeb)
+router.delete('/delete_carousel', deleteCarousel)
 module.exports = router

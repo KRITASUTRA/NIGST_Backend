@@ -107,7 +107,102 @@ exports.viewCarouselToAdmin = async (req, res) => {
       }
     }
   };
+
+  exports.visibilityedit=async(req,res)=>{
+    let connection
+    try {
+        connection=await pool.connect()
+        const{cid,status}=req.body
+        const check='SELECT * FROM home_carousel WHERE c_id=$1'
+        const result=await connection.query(check,[cid])
+        if (result.rowCount===0) {
+            return res.status(404).send({ message: "No Data Found" });
+            
+        }
+        const update_query='UPDATE home_carousel SET c_status=$1 WHERE c_id=$2'
+        await connection.query(update_query,[status,cid])
+        return res.status(200).send({ message: "Updated Successfully." });
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send({ message: 'Internal Server Error!' });
+    } finally {
+      if (connection) {Found
+        await connection.release();
+      }
+    }
+}
   
   
   
   
+exports.viewCarouselToWeb = async (req, res) => {
+  let connection;
+  try {
+    connection = await pool.connect();
+    const check = `SELECT c_id, path FROM home_carousel WHERE c_status=$1 ORDER BY upload_date DESC`;
+    const result = await connection.query(check,[true]);
+    if (result.rowCount === 0) {
+      return res.status(404).send({ message: "No Data Found" });
+    }
+    let images = [];
+    for (const row of result.rows) {
+      const url = row.path;
+      const Key = 'home_carousel/' + url.substring(url.lastIndexOf('/') + 1);
+      const client = new S3Client({
+        region: process.env.BUCKET_REGION,
+        credentials: {
+          accessKeyId: process.env.ACCESS_KEY,
+          secretAccessKey: process.env.SECRET_ACCESS_KEY,
+        },
+      });
+      const command = new GetObjectCommand({
+        Bucket: process.env.BUCKET_NAME,
+        Key: Key,
+      });
+      const imageurl = await getSignedUrl(client, command, { expiresIn: 36000 });
+      const imagedata = {
+        imageurl,
+        CId: row.c_id,
+        cstatus: row.c_status,
+        
+      };
+      images.push(imagedata);
+    }
+
+    // Sort images by upload date in descending order
+    images.sort((a, b) => new Date(b.uploaddate) - new Date(a.uploaddate));
+
+    return res.status(200).send({ images });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal Server Error!' });
+  } finally {
+    if (connection) {
+      await connection.release()
+    }
+  }
+};
+
+exports.deleteCarousel = async (req, res) => {
+  let connection
+  try {
+    connection=await pool.connect()
+    const{cid}=req.body
+    const check='select * from home_carousel WHERE c_id=$1'
+    const result=await connection.query(check,[cid])
+    if (result.rowCount===0) {
+      return res.status(404).send({message: 'No Image Found'}) 
+    }
+    const deleteQuery='delete from home_carousel WHERE c_id=$1'
+    await connection.query(deleteQuery,[cid])
+return res.status(200).send({message: 'Successfully Deleted'})
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send({message: 'Internal Server Error!'})
+  }
+  finally{
+    if(connection){
+      (await connection).release()
+    }
+  }
+}
