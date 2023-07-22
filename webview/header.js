@@ -24,11 +24,11 @@ exports.HeaderCreate = async (req, res) => {
     const maxAttempts = 10;
     let attempts = 0;
     let HID;
-
+    let result1; 
     do {
       HID = 'H-' + generateNumericValue(7);
       const check01 = 'SELECT * FROM header WHERE h_id = $1';
-      const result1 = await connection.query(check01, [HID]);
+      result1 = await connection.query(check01, [HID]); 
       attempts++;
     } while (result1.rowCount > 0 && attempts < maxAttempts);
 
