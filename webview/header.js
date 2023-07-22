@@ -90,10 +90,16 @@ exports.viewHeader = async (req, res) => {
 
         const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
 
-        // Find the h_id corresponding to the current attachment
         const h_id = allHeader.rows.find(row => row.h_path === attachment).h_id;
+        const visibility = allHeader.rows.find(row => row.h_path === attachment).visibility;
 
-        imageData.push({ h_id, fileName: key, url, h_name: allHeader.rows.find(row => row.h_path === attachment).h_name });
+        imageData.push({
+          h_id,
+          fileName: key,
+          url,
+          h_name: allHeader.rows.find(row => row.h_path === attachment).h_name,
+          visibility, 
+        });
       } catch (error) {
         console.error(`Error retrieving file '${key}': ${error}`);
       }
@@ -113,6 +119,7 @@ exports.viewHeader = async (req, res) => {
     }
   }
 };
+
 
 
 // ===================update============================
