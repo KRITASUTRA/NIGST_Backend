@@ -3,77 +3,82 @@ const generateNumericValue = require("../generator/NumericId");
 
 // ===============create ===================
 exports.FooterCreate = async (req, res) => {
-    let connection;
-    try {
-      const { name, link, type, phone, email, address } = req.body;
-  
-      if (!type) {
-        return res.status(400).send({ message: "Type is required" });
+  let connection;
+  try {
+    const { name, link, type, phone, email, address } = req.body;
+
+    if (!type) {
+      return res.status(400).send({ message: "Type is required" });
+    }
+
+    if (
+      type !== "Contact Us" &&
+      type !== "Quick Links" &&
+      type !== "Important Links"
+    ) {
+      return res.status(400).send({ message: "Invalid type value" });
+    }
+
+    connection = await pool.connect();
+
+    if (type === "Contact Us") {
+      if (!phone || !email || !address) {
+        return res
+          .status(400)
+          .send({ message: "Phone, email, and address are required" });
       }
-  
-      if (
-        type !== "Contact Us" &&
-        type !== "Quick Links" &&
-        type !== "Important Links"
-      ) {
-        return res.status(400).send({ message: "Invalid type value" });
-      }
-  
-      connection = await pool.connect();
-  
-      const checkExxistence =
-        "SELECT * FROM footer WHERE phone = $1 AND email = $2 AND address = $3";
-      const result2 = await connection.query(checkExxistence, [
-        phone,
-        email,
-        address,
-      ]);
-  
-      if (result2.rowCount > 0) {
-        return res.status(500).send({ message: "Data Already Exists!" });
-      }
-  
-      let FID = "F-" + generateNumericValue(7);
-  
-      const check01 = "SELECT * FROM footer WHERE footer_id = $1";
-      let result = await connection.query(check01, [FID]);
-  
-      while (result.rowCount > 0) {
-        FID = "F-" + generateNumericValue(7);
-        result = await connection.query(check01, [FID]);
-      }
-  
-      let check;
-      let data;
-  
-      if (type === "Contact Us") {
-        check =
-          "INSERT INTO footer (phone, email, address, footer_id) VALUES ($1, $2, $3, $4)";
-        data = [phone, email, address, FID];
-      } else {
-        if (!name || !link) {
-          return res
-            .status(400)
-            .send({ message: "Name and link are required" });
-        }
-  
-        check = "INSERT INTO footer (name, link, footer_id) VALUES ($1, $2, $3)";
-        data = [name, link, FID];
-      }
-  
-      const result1 = await connection.query(check, data);
-  
-      return res.status(201).send({ message: "Successfully Created!" });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).send({ message: "Internal Server Error!" });
-    } finally {
-      if (connection) {
-        await connection.release();
+    } else { 
+      if (!name || !link) {
+        return res
+          .status(400)
+          .send({ message: "Name and link are required" });
       }
     }
-  };
-  
+
+    const checkExxistence =
+      "SELECT * FROM footer WHERE phone = $1 AND email = $2 AND address = $3";
+    const check01 = "SELECT * FROM footer WHERE footer_id = $1";
+    let FID = "F-" + generateNumericValue(7);
+
+    const [result2, result] = await Promise.all([
+      connection.query(checkExxistence, [phone, email, address]),
+      connection.query(check01, [FID]),
+    ]);
+
+    if (result2.rowCount > 0) {
+      return res.status(500).send({ message: "Data Already Exists!" });
+    }
+
+    while (result.rowCount > 0) {
+      FID = "F-" + generateNumericValue(7);
+      result = await connection.query(check01, [FID]);
+    }
+
+    let check;
+    let data;
+
+    if (type === "Contact Us") {
+      check =
+        "INSERT INTO footer (phone, email, address, footer_id, type) VALUES ($1, $2, $3, $4, $5)";
+      data = [phone, email, address, FID, type];
+    } else {
+      check = "INSERT INTO footer (name, link, footer_id, type) VALUES ($1, $2, $3, $4)";
+      data = [name, link, FID, type];
+    }
+
+    const result1 = await connection.query(check, data);
+
+    return res.status(201).send({ message: "Successfully Created!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: "Internal Server Error!" });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
 
 // ==================get all data =================
 exports.viewFooter=async(req,res)=>{
