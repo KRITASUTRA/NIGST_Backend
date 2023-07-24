@@ -578,6 +578,18 @@ await client.query(
   `
 )
 
+await client.query(
+  `
+  CREATE TABLE IF NOT EXISTS social_media(
+    id SERIAL PRIMARY KEY,
+    sm_id varchar(255),
+    icon_name varchar(255) NOT NULL UNIQUE,
+    url varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
+    change_date DATE
+  )`
+)
+
   console.log('Tables created successfully')
   }
 
