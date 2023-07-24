@@ -506,6 +506,8 @@ CREATE TABLE IF NOT EXISTS header(
   h_id varchar(255),
   h_name varchar(255),
   h_path varchar(255),
+  url varchar(255),
+  visibility BOOLEAN DEFAULT FALSE,
   date TIMESTAMP DEFAULT NOW()
 )
 `)

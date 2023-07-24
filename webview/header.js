@@ -55,6 +55,7 @@ exports.HeaderCreate = async (req, res) => {
 
 
 // =============view=======================
+
 exports.viewHeader = async (req, res) => {
   let connection;
   try {
@@ -143,6 +144,7 @@ exports.updateHeader = async (req, res) => {
 };
 
 
+
 exports.updateVisibility = async (req, res) => {
   let connection;
   try {
@@ -161,3 +163,17 @@ exports.updateVisibility = async (req, res) => {
     }
   }
 };
+
+exports.deleteHeader=async(req,res)=>{
+  let connection
+  try {
+    connection=await pool.connect()
+
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send({message:'Internal Server Error!.'})
+  }
+  if (connection) {
+    await connection.release()
+  }
+}
