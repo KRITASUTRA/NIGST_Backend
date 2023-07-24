@@ -8,7 +8,7 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 exports.HeaderCreate = async (req, res) => {
   let connection;
   try {
-    const { Hname } = req.body;
+    const { Hname, url} = req.body;
     const image = req.files.image;
     const Hpath = image[0].location;
 
@@ -18,7 +18,7 @@ exports.HeaderCreate = async (req, res) => {
     if (result.rowCount > 0) {
       return res.status(409).send({ message: "Data Already Exists!" });
     }
-
+6
     let HID = 'H-' + generateNumericValue(7);
     const check01 = 'SELECT * FROM header WHERE h_id=$1';
     let result1 = await connection.query(check01, [HID]);
@@ -28,8 +28,8 @@ exports.HeaderCreate = async (req, res) => {
       result1 = await connection.query(check01, [HID]);
     }
 
-    const check1 = `INSERT INTO header (h_id,h_name,h_path) VALUES($1,$2,$3)`;
-    const data = [HID, Hname, Hpath];
+    const check1 = `INSERT INTO header (h_id,h_name,h_path,url) VALUES($1,$2,$3,$4)`;
+    const data = [HID, Hname, Hpath, url];
     const result2 = await connection.query(check1, data);
 
     return res.status(201).send({ message: 'Successfully Created' });
