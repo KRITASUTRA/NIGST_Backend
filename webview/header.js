@@ -36,8 +36,8 @@ exports.HeaderCreate = async (req, res) => {
       return res.status(500).send({ message: "Failed to generate a unique HID. Please try again later." });
     }
 
-    const check1 = `INSERT INTO header (h_id,h_name,h_path) VALUES($1,$2,$3)`;
-    const data = [HID, Hname, Hpath];
+    const check1 = `INSERT INTO header (h_id,h_name,h_path,url) VALUES($1,$2,$3,$4)`;
+    const data = [HID, Hname, Hpath,url];
     const result2 = await connection.query(check1, data);
 
     return res.status(201).send({ message: 'Successfully Created' });
