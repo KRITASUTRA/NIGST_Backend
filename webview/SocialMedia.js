@@ -29,8 +29,16 @@ exports.addURL=async(req,res)=>{
 
     let connection 
     try {
+        const {url,sid}=req.body 
         connection=await pool.connect()
         const check='SELECT * FROM social_media WHERE sm_id=$1'
+        const result=await connection.query(check,[sid])
+        if (result.rowCount===0) {
+            return res.status(404).send({message:'Record Not Exists!.'})
+        }
+        const addurl='UPDATE social_media SET url=$1 WHERE sm_id=$2'
+        await connection.query(addurl,[url,sid])
+        return res.status(200).send({message:'URL Added Successfully.'})
     } catch (error) {
         console.error(error)
         return res.status(500).send({message:'Internal Server Error!.'})
