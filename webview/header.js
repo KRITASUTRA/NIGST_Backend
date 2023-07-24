@@ -59,7 +59,7 @@ exports.HeaderCreate = async (req, res) => {
 exports.viewHeader = async (req, res) => {
   let connection;
   try {
-    const allViewHeader = "SELECT h_id, h_name, h_path, visibility FROM header";
+    const allViewHeader = "SELECT h_id, h_name, h_path,url, visibility FROM header";
     connection = await pool.connect();
     const allHeader = await connection.query(allViewHeader);
 
@@ -88,15 +88,16 @@ exports.viewHeader = async (req, res) => {
           Key: key,
         });
 
-        const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-
+        const imgurl = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+        const url = allHeader.rows.find(row => row.h_path === attachment).url;
         const h_id = allHeader.rows.find(row => row.h_path === attachment).h_id;
         const visibility = allHeader.rows.find(row => row.h_path === attachment).visibility;
 
         imageData.push({
           h_id,
           fileName: key,
-          url,
+          imageurl:imgurl,
+          header_url: url,
           h_name: allHeader.rows.find(row => row.h_path === attachment).h_name,
           visibility, 
         });
@@ -127,11 +128,16 @@ exports.viewHeader = async (req, res) => {
 exports.updateHeader = async (req, res) => {
   let connection;
   try {
-    const { Hname, HID } = req.body;
-    const updateH = "UPDATE header SET  h_name=$1 WHERE h_id=$2";
+    const { Hname, HID, url} = req.body;
     connection = await pool.connect();
+    const check_header= "select * from updateHeader Where h_id=$1"
+    const result = await connection.query(check_header,[h_id])
+    if (result.rowCount===0) {
+      return res.status(404).send({ message: "No Data Found" });
+    }
+    const updateH = "UPDATE header SET  h_name=$1, url=$2 WHERE h_id=$3";
 
-    const updateHeader = await connection.query(updateH, [Hname, HID]);
+    const updateHeader = await connection.query(updateH, [Hname, url, HID]);
     return res.status(200).send({ message: "Successfully Updated!" });
   } catch (error) {
     console.error(error);
