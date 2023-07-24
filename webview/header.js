@@ -13,23 +13,31 @@ exports.HeaderCreate = async (req, res) => {
     const Hpath = image[0].location;
 
     connection = await pool.connect();
-    const checkExistence = "SELECT * FROM header WHERE h_name=$1";
+
+    const checkExistence = "SELECT * FROM header WHERE h_name = $1";
     const result = await connection.query(checkExistence, [Hname]);
+
     if (result.rowCount > 0) {
       return res.status(409).send({ message: "Data Already Exists!" });
     }
-6
-    let HID = 'H-' + generateNumericValue(7);
-    const check01 = 'SELECT * FROM header WHERE h_id=$1';
-    let result1 = await connection.query(check01, [HID]);
 
-    while (result1.rowCount > 0) {
+    const maxAttempts = 10;
+    let attempts = 0;
+    let HID;
+    let result1; 
+    do {
       HID = 'H-' + generateNumericValue(7);
-      result1 = await connection.query(check01, [HID]);
+      const check01 = 'SELECT * FROM header WHERE h_id = $1';
+      result1 = await connection.query(check01, [HID]); 
+      attempts++;
+    } while (result1.rowCount > 0 && attempts < maxAttempts);
+
+    if (attempts >= maxAttempts) {
+      return res.status(500).send({ message: "Failed to generate a unique HID. Please try again later." });
     }
 
-    const check1 = `INSERT INTO header (h_id,h_name,h_path,url) VALUES($1,$2,$3,$4)`;
-    const data = [HID, Hname, Hpath, url];
+    const check1 = `INSERT INTO header (h_id,h_name,h_path) VALUES($1,$2,$3)`;
+    const data = [HID, Hname, Hpath];
     const result2 = await connection.query(check1, data);
 
     return res.status(201).send({ message: 'Successfully Created' });
@@ -44,16 +52,20 @@ exports.HeaderCreate = async (req, res) => {
 };
 
 
+
+
 // =============view=======================
 exports.viewHeader = async (req, res) => {
   let connection;
   try {
-    const allViewHeader = "SELECT h_id,h_name,h_path,visibility FROM header";
+    const allViewHeader = "SELECT h_id, h_name, h_path, visibility FROM header";
     connection = await pool.connect();
     const allHeader = await connection.query(allViewHeader);
+
     if (allHeader.rowCount === 0) {
       return res.status(404).send({ message: 'No image Found' });
     }
+
     const attachments = allHeader.rows.map(row => row.h_path).filter(Boolean);
     const imageData = [];
 
@@ -74,13 +86,24 @@ exports.viewHeader = async (req, res) => {
           Bucket: process.env.BUCKET_NAME,
           Key: key,
         });
+
         const url = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
 
-        imageData.push({ fileName: key, url, h_name: allHeader.rows.find(row => row.h_path === attachment).h_name });
+        const h_id = allHeader.rows.find(row => row.h_path === attachment).h_id;
+        const visibility = allHeader.rows.find(row => row.h_path === attachment).visibility;
+
+        imageData.push({
+          h_id,
+          fileName: key,
+          url,
+          h_name: allHeader.rows.find(row => row.h_path === attachment).h_name,
+          visibility, 
+        });
       } catch (error) {
         console.error(`Error retrieving file '${key}': ${error}`);
       }
     }
+
     if (imageData.length === 0) {
       return res.status(404).send({ error: 'Image not found.' });
     }
@@ -95,6 +118,8 @@ exports.viewHeader = async (req, res) => {
     }
   }
 };
+
+
 
 // ===================update============================
 
