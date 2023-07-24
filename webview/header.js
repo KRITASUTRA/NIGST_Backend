@@ -8,7 +8,7 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 exports.HeaderCreate = async (req, res) => {
   let connection;
   try {
-    const { Hname, url} = req.body;
+    const { Hname, url } = req.body;
     const image = req.files.image;
     const Hpath = image[0].location;
 
@@ -24,11 +24,12 @@ exports.HeaderCreate = async (req, res) => {
     const maxAttempts = 10;
     let attempts = 0;
     let HID;
-    let result1; 
+    let result1 = null; // Initialize result1 outside the loop
+
     do {
       HID = 'H-' + generateNumericValue(7);
       const check01 = 'SELECT * FROM header WHERE h_id = $1';
-      result1 = await connection.query(check01, [HID]); 
+      result1 = await connection.query(check01, [HID]);
       attempts++;
     } while (result1.rowCount > 0 && attempts < maxAttempts);
 
@@ -36,9 +37,9 @@ exports.HeaderCreate = async (req, res) => {
       return res.status(500).send({ message: "Failed to generate a unique HID. Please try again later." });
     }
 
-    const check1 = `INSERT INTO header (h_id,h_name,h_path,url) VALUES($1,$2,$3,$4)`;
-    const data = [HID, Hname, Hpath,url];
-    const result2 = await connection.query(check1, data);
+    const insertQuery = `INSERT INTO header (h_id, h_name, h_path, url) VALUES ($1, $2, $3, $4)`;
+    const data = [HID, Hname, Hpath, url];
+    await connection.query(insertQuery, data);
 
     return res.status(201).send({ message: 'Successfully Created' });
   } catch (error) {
@@ -50,7 +51,6 @@ exports.HeaderCreate = async (req, res) => {
     }
   }
 };
-
 
 
 
@@ -128,16 +128,21 @@ exports.viewHeader = async (req, res) => {
 exports.updateHeader = async (req, res) => {
   let connection;
   try {
-    const { Hname, HID, url} = req.body;
+    const { Hname, HID, url } = req.body;
     connection = await pool.connect();
-    const check_header= "select * from updateHeader Where h_id=$1"
-    const result = await connection.query(check_header,[h_id])
-    if (result.rowCount===0) {
+
+    // Check if the header with the given HID exists in the database
+    const check_header = "SELECT * FROM header WHERE h_id = $1";
+    const result = await connection.query(check_header, [HID]);
+
+    if (result.rowCount === 0) {
       return res.status(404).send({ message: "No Data Found" });
     }
-    const updateH = "UPDATE header SET  h_name=$1, url=$2 WHERE h_id=$3";
 
+    // Update the header information in the database
+    const updateH = "UPDATE header SET h_name = $1, url = $2 WHERE h_id = $3";
     const updateHeader = await connection.query(updateH, [Hname, url, HID]);
+
     return res.status(200).send({ message: "Successfully Updated!" });
   } catch (error) {
     console.error(error);
@@ -148,6 +153,7 @@ exports.updateHeader = async (req, res) => {
     }
   }
 };
+
 
 
 
