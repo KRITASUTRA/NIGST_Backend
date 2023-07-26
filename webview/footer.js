@@ -10,7 +10,7 @@ exports.FooterCreate = async (req, res) => {
     if (!type) {
       return res.status(400).send({ message: "Type is required" });
     }
-
+    
     if (
       type !== "Contact Us" &&
       type !== "Quick Links" &&
@@ -164,10 +164,9 @@ exports.deleteFooter=async(req,res)=>{
           connection=await pool.connect()
           const ExistanceFooter_id="SELECT * FROM footer WHERE footer_id=$1"
           const result=await connection.query(ExistanceFooter_id,[footer_id]);
-          if(result.rowCount==0)
-          return res.status(404).send({message:"footer_id does not exist!"})
-          
-          
+          if(result.rowCount===0){
+          return res.status(404).send({message:"Data does not exist!"})
+          }
           const delFoot="DELETE FROM footer WHERE footer_id=$1"
           const dFooter=await connection.query(delFoot,[footer_id])
           return res.status(200).send({message: "Successfully Deleted!"})
@@ -175,7 +174,7 @@ exports.deleteFooter=async(req,res)=>{
 
     catch (error) {
         console.error(error)
-        return res.status(500).send({message:'Internal Server Eroor!.'})
+        return res.status(500).send({message:'Internal Server Error!.'})
     }
 finally{
     if (connection) {

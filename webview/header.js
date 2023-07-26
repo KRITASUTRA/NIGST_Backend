@@ -177,8 +177,13 @@ exports.updateVisibility = async (req, res) => {
 exports.deleteHeader=async(req,res)=>{
   let connection
   try {
+   const{hid}=req.body
     connection=await pool.connect()
-
+   const check_header="select * from header where h_id=$1"
+   const result=await connection.query(check_header,[hid]);
+   if (result===0) {
+    return res.status(404).send({message:"Header not found!"})
+   }
   } catch (error) {
     console.error(error)
     return res.status(500).send({message:'Internal Server Error!.'})
