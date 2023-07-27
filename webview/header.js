@@ -155,17 +155,13 @@ exports.updateVisibility = async (req, res) => {
   let connection;
   try {
     const { HID, Hvisible } = req.body;
-    const updateH = "UPDATE header SET visibility=$1 WHERE h_id=$2";
+    const updateH = "UPDATE header SET  visibility=$1 WHERE h_id=$2";
     connection = await pool.connect();
-
-    const check_visibility = "SELECT COUNT(*) AS visible_count FROM header WHERE visibility = true";
-    const result = await connection.query(check_visibility);
-    const visibleCount = parseInt(result.rows[0].visible_count);
-
-    if (Hvisible && visibleCount >= 2) {
-      return res.status(400).send({ message: "Only two images are allowed to display in the header" });
+    const check_visibility = "select count HID FROM header WHERE visibility = true"
+    const result = await connection.query(check_visibility)
+    if (result.rowCount>2) {
+      return res.status(400).send({ message: "Only two images are allowed to display in header" });
     }
-
     const updateHeader = await connection.query(updateH, [Hvisible, HID]);
     return res.status(200).send({ message: "Successfully Updated!" });
   } catch (error) {
@@ -178,7 +174,6 @@ exports.updateVisibility = async (req, res) => {
   }
 };
 
-
 exports.deleteHeader=async(req,res)=>{
   let connection
   try {
@@ -189,9 +184,13 @@ exports.deleteHeader=async(req,res)=>{
    if (result===0) {
     return res.status(404).send({message:"Header not found!"})
    }
+   const delete_header='DELETE from header WHERE h_id=$1'
+   await connection.query(delete_header,[hid])
+   return res.status(200).send({message: "Successfully Deleted!"})
+   
   } catch (error) {
     console.error(error)
-    return res.status(500).send({message:'Internal Server Error!.'})
+    return res.status(500).send({message:'Internal Server Error!'})
   }
   finally{
     if (connection) {
