@@ -187,7 +187,6 @@ exports.deleteHeader=async(req,res)=>{
    const delete_header='DELETE from header WHERE h_id=$1'
    await connection.query(delete_header,[hid])
    return res.status(200).send({message: "Successfully Deleted!"})
-   
   } catch (error) {
     console.error(error)
     return res.status(500).send({message:'Internal Server Error!'})
@@ -199,3 +198,68 @@ exports.deleteHeader=async(req,res)=>{
   }
 
 }
+
+exports.ViewHeaderWebsite = async (req, res) => {
+  let connection;
+  try {
+    const selectheaderwebsite = "SELECT h_id, h_name, h_path, url FROM header WHERE visibility=true ORDER BY date DESC";
+    connection = await pool.connect();
+    const allHeader = await connection.query(selectheaderwebsite);
+
+    if (allHeader.rowCount === 0) {
+      return res.status(404).send({ message: 'No image Found' });
+    }
+
+    const attachments = allHeader.rows.map(row => row.h_path).filter(Boolean);
+    const imageData = [];
+
+    for (const attachment of attachments) {
+      const fileUrl = attachment;
+      const key = 'header_upload/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+
+      try {
+        const s3Client = new S3Client({
+          region: process.env.BUCKET_REGION,
+          credentials: {
+            accessKeyId: process.env.ACCESS_KEY,
+            secretAccessKey: process.env.SECRET_ACCESS_KEY,
+          },
+        });
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: key,
+        });
+
+        const imgurl = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+        const url = allHeader.rows.find(row => row.h_path === attachment).url;
+        const h_id = allHeader.rows.find(row => row.h_path === attachment).h_id;
+        const visibility = allHeader.rows.find(row => row.h_path === attachment).visibility;
+
+        imageData.push({
+          h_id,
+          fileName: key,
+          imageurl:imgurl,
+          header_url: url,
+          h_name: allHeader.rows.find(row => row.h_path === attachment).h_name,
+          visibility, 
+        });
+      } catch (error) {
+        console.error(`Error retrieving file '${key}': ${error}`);
+      }
+    }
+
+    if (imageData.length === 0) {
+      return res.status(404).send({ error: 'Image not found.' });
+    }
+
+    return res.send({ data: imageData });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};

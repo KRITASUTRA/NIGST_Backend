@@ -8,7 +8,7 @@ const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible } = 
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
 const { createAlbum, viewAlbum } = require('../../controllers/album')
 const { createProject, viewProject, updateSoiProject, deleteProject, viewProjectForWeb } = require('../../controllers/soi_project')
-const { HeaderCreate, viewHeader, updateVisibility, updateHeader, deleteHeader } = require('../header')
+const { HeaderCreate, viewHeader, updateVisibility, updateHeader, deleteHeader, ViewHeaderWebsite } = require('../header')
 const { CreateMarquee, viewMarqueeToAdmin, editMarqueeDetails, editMarqueeVisibility, viewMarqueeForWeb, deleteMarque } = require('../Marquee')
 const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, deleteCarousel } = require('../Carousel')
 
@@ -47,7 +47,7 @@ router.get('/view_header', viewHeader)
 router.patch('/update_header',updateHeader)
 router.patch('/update_visible_header',updateVisibility)
 router.delete('/delete_header',deleteHeader)
-
+router.get('/web_header',ViewHeaderWebsite)
 
 router.post('/footer_create', FooterCreate)
 router.get('/footer_view', viewFooter)
