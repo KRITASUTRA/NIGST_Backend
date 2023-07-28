@@ -182,3 +182,28 @@ finally{
     }
 }
 }
+
+exports.contactUSFooter= async (req,res) =>{
+  let connection
+  try {
+    connection= await pool.connect()
+  const checkContactUs='select phone, email, address from footer WHERE visibile=$1 AND type=$2'
+  const contact=connection.query(checkContactUs,[true,'Contact Us'])
+  if (contact.rowCount===0) {
+    return res.status(404).send({ message: "NO Data to Display" })
+  }
+  const dataArr=[]
+  //onst phone= contact.rows.phone.map((phone)=)
+  //const email=
+  //const address=
+  console.log(contact.rows[0].phone)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send({message:'Internal Server Error'})
+  }
+  finally{
+    if (connection) {
+      await connection.release()
+    }
+  }
+}
