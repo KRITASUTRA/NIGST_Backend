@@ -21,19 +21,19 @@ exports.FooterCreate = async (req, res) => {
 
     connection = await pool.connect();
 
-    if (type === "Contact Us") {
-      if (!phone || !email || !address) {
-        return res
-          .status(400)
-          .send({ message: "Phone, email, and address are required" });
-      }
-    } else { 
-      if (!name || !link) {
-        return res
-          .status(400)
-          .send({ message: "Name and link are required" });
-      }
-    }
+    // if (type === "Contact Us") {
+    //   if (!phone || !email || !address) {
+    //     return res
+    //       .status(400)
+    //       .send({ message: "Phone, email, and address are required" });
+    //   }
+    // } else { 
+    //   if (!name || !link) {
+    //     return res
+    //       .status(400)
+    //       .send({ message: "Name and link are required" });
+    //   }
+    // }
 
     const checkExxistence =
       "SELECT * FROM footer WHERE phone = $1 AND email = $2 AND address = $3";
