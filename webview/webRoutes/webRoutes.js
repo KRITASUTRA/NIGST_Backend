@@ -4,7 +4,7 @@ const { viewWebAnnouncement, viewAllWebAnnouncement, viewPDFAnnouncement, viewAl
 const { createBanner, getBanner } = require('../Banner')
 const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel } = require('../../middleware/faculty')
 
-const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter } = require('../footer')
+const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter, viewFooterWebsite } = require('../footer')
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
 const { createAlbum, viewAlbum } = require('../../controllers/album')
 const { createProject, viewProject, updateSoiProject, deleteProject, viewProjectForWeb } = require('../../controllers/soi_project')
@@ -55,6 +55,8 @@ router.patch('/footer_update', updateFooter)
 router.patch('/update_visible_footer',updateVisible)
 router.delete('/footer_delete', deleteFooter)
 router.get('/contact_footer',contactUSFooter)
+router.get('/footer_web',viewFooterWebsite)
+
 
 router.post('/create_marquee',CreateMarquee)
 router.get('/view_amarquee',viewMarqueeToAdmin)

@@ -223,3 +223,54 @@ exports.contactUSFooter = async (req, res) => {
   }
 }
 
+
+
+exports.viewFooterWebsite=async(req,res)=>{
+  let connection
+  try{
+  const FooterWebsiteCheck="SELECT * from footer WHERE visibile=true"
+  connection=await pool.connect()
+  const result=await connection.query(FooterWebsiteCheck)
+  if (result.rowCount===0) {
+      return res.status(404).send({message:'No Data Found'})
+  }
+  const dataArr = {
+    obj:{name:[], link:[], type:[]},
+    phone: [],
+    email: [],
+    address: []
+  }
+  
+  
+  result.rows.forEach(contactData => {
+    if (contactData.phone) {
+      dataArr.phone.push(contactData.phone)
+    }
+    if (contactData.name && contactData.link && contactData.type) {
+      dataArr.phone.push(contactData.phone)
+    }
+    if (contactData.email) {
+      dataArr.email.push(contactData.email)
+    }
+    if (contactData.address) {
+      dataArr.address.push(contactData.address)
+    }
+    if (contactData.name && contactData.link && contactData.type) {
+      dataArr.name.push(contactData.obj.name)
+      dataArr.link.push(contactData.obj.link)
+      dataArr.type.push(contactData.obj.type)
+
+    }
+  })
+  return res.send(dataArr)
+  }
+  catch (error) {
+      console.error(error)
+      return res.status(500).send({message:'Internal Server Eroor!.'})
+  }
+finally{
+  if (connection) {
+      await connection.release()
+  }
+}
+}
