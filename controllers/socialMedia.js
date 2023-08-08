@@ -143,93 +143,105 @@ exports.createSocialMedia=async(req,res) =>{
 }
 
 
-exports.updateVisiblee=async(req,res)=>{
-  let connection
-  try{
-      const {SID,Svisible}=req.body
-      const updateSocial="UPDATE social_media SET visibility=$1 WHERE sm_id=$2"
-      connection=await pool.connect()
-  
-  
-  const uMedia=await connection.query(updateSocial,[Svisible, SID])
-  return res.status(200).send({message: "Successfully Updated!"})
-  }
 
-  catch (error) {
-      console.error(error)
-      return res.status(500).send({message:'Internal Server Error!.'})
-  }
-finally{
-  if (connection) {
-      await connection.release()
-  }
-}
-}
-
-
-exports.viewSocialMedia=async(req,res)=>{
-  let connection
-try {
-  const allMedia="SELECT * from social_media order by icon_name ASC"
-  connection=await pool.connect()
-  
-  
-  const alMedia=await connection.query(allMedia)
-  return res.status(200).send({data:alMedia.rows})
-  }
- catch (error) {
-  console.error(error)
-  return res.status(500).send({message:'Internal Server Error!.'})
-}
-finally{
-  if (connection) {
-      await connection.release()
-  }
-}
-}
-
-exports.viewSocialMediaToWebsite=async(req,res)=>{
-  let connection
-try {
-  const allMedia="SELECT * from social_media WHERE visibility=true order by icon_name ASC"
-  connection=await pool.connect()
-  
-  
-  const alMedia=await connection.query(allMedia)
-  return res.status(200).send({data:alMedia.rows})
-  }
- catch (error) {
-  console.error(error)
-  return res.status(500).send({message:'Internal Server Error!.'})
-}
-finally{
-  if (connection) {
-      await connection.release()
-  }
-}
-}
-
-
-exports.updateSocialMedia=async(req,res)=>{
-  let connection
+exports.updateVisiblee = async (req, res) => {
+  let connection;
   try {
-    const {name,url,color,SID}=req.body
-        const updateMedia="UPDATE social_media SET icon_name=$1,icon_url=$2,icon_color=$3 WHERE sm_id=$4"
-        connection=await pool.connect()
-    
-    
-    const uMedia=await connection.query(updateMedia,[name,url,color,SID])
-    return res.status(200).send({message: "Successfully Updated!"})
-  } catch (error) {
-    console.error(error)
-    return res.status(500).send({message:'Internal Server Error!.'})
-  }
-  finally{
-    if (connection) {
-        await connection.release()
+    const { SID, Svisible } = req.body;
+    const updateSocial = "UPDATE social_media SET visibility=$1 WHERE sm_id=$2";
+    connection = await pool.connect();
+
+    const uMedia = await connection.query(updateSocial, [Svisible, SID]);
+
+    if (uMedia.rowCount === 0) {
+      return res.status(404).send({ message: 'Social media data not found or no changes were made.' });
     }
-}
-}
+
+    return res.status(200).send({ message: 'Successfully Updated!' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal Server Error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
+
+exports.viewSocialMedia = async (req, res) => {
+  let connection;
+  try {
+    const allMedia = "SELECT * from social_media order by icon_name ASC";
+    connection = await pool.connect();
+
+    const alMedia = await connection.query(allMedia);
+
+    if (alMedia.rows.length === 0) {
+      return res.status(404).send({ message: 'No social media data found.' });
+    }
+
+    return res.status(200).send({ data: alMedia.rows });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal Server Error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
+
+exports.viewSocialMediaToWebsite = async (req, res) => {
+  let connection;
+  try {
+    const allMedia = "SELECT * from social_media WHERE visibility=true order by icon_name ASC";
+    connection = await pool.connect();
+
+    const alMedia = await connection.query(allMedia);
+
+    if (alMedia.rows.length === 0) {
+      return res.status(404).send({ message: 'No visible social media data found.' });
+    }
+
+    return res.status(200).send({ data: alMedia.rows });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal Server Error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
+
+
+exports.updateSocialMedia = async (req, res) => {
+  let connection;
+  try {
+    const { name, url, color, SID } = req.body;
+    const updateMedia = "UPDATE social_media SET icon_name=$1, icon_url=$2, icon_color=$3 WHERE sm_id=$4";
+    connection = await pool.connect();
+
+    const uMedia = await connection.query(updateMedia, [name, url, color, SID]);
+
+    if (uMedia.rowCount === 0) {
+      return res.status(404).send({ message: 'Social media data not found or no changes were made.' });
+    }
+
+    return res.status(200).send({ message: 'Successfully Updated!' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal Server Error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
 
 
 exports.deleteSocialMedia=async(req,res)=>{
