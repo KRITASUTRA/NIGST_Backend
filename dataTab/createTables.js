@@ -586,7 +586,7 @@ await client.query(
     icon_name varchar(255) NOT NULL UNIQUE,
     url varchar(255),
     visibility BOOLEAN DEFAULT FALSE,
-    change_date DATE
+    date TIMESTAMP DEFAULT NOW()
   )`
 )
 
