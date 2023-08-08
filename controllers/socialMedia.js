@@ -157,7 +157,7 @@ exports.updateVisiblee=async(req,res)=>{
 
   catch (error) {
       console.error(error)
-      return res.status(500).send({message:'Internal Server Eroor!.'})
+      return res.status(500).send({message:'Internal Server Error!.'})
   }
 finally{
   if (connection) {
@@ -179,7 +179,28 @@ try {
   }
  catch (error) {
   console.error(error)
-  return res.status(500).send({message:'Internal Server Eroor!.'})
+  return res.status(500).send({message:'Internal Server Error!.'})
+}
+finally{
+  if (connection) {
+      await connection.release()
+  }
+}
+}
+
+exports.viewSocialMediaToWebsite=async(req,res)=>{
+  let connection
+try {
+  const allMedia="SELECT * from social_media WHERE visibility=true order by icon_name ASC"
+  connection=await pool.connect()
+  
+  
+  const alMedia=await connection.query(allMedia)
+  return res.status(200).send({data:alMedia.rows})
+  }
+ catch (error) {
+  console.error(error)
+  return res.status(500).send({message:'Internal Server Error!.'})
 }
 finally{
   if (connection) {
@@ -201,7 +222,7 @@ exports.updateSocialMedia=async(req,res)=>{
     return res.status(200).send({message: "Successfully Updated!"})
   } catch (error) {
     console.error(error)
-    return res.status(500).send({message:'Internal Server Eroor!.'})
+    return res.status(500).send({message:'Internal Server Error!.'})
   }
   finally{
     if (connection) {
@@ -232,7 +253,7 @@ exports.deleteSocialMedia=async(req,res)=>{
 
   catch (error) {
       console.error(error)
-      return res.status(500).send({message:'Internal Server Eroor!.'})
+      return res.status(500).send({message:'Internal Server Error!.'})
   }
 finally{
   if (connection) {

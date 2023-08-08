@@ -11,7 +11,7 @@ const { createProject, viewProject, updateSoiProject, deleteProject, viewProject
 const { HeaderCreate, viewHeader, updateVisibility, updateHeader, deleteHeader, ViewHeaderWebsite } = require('../header')
 const { CreateMarquee, viewMarqueeToAdmin, editMarqueeDetails, editMarqueeVisibility, viewMarqueeForWeb, deleteMarque } = require('../Marquee')
 const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, deleteCarousel } = require('../Carousel')
-const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, deleteSocialMedia } = require('../../controllers/socialMedia')
+const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, deleteSocialMedia, viewSocialMediaToWebsite } = require('../../controllers/socialMedia')
 
 const router = express.Router()
 
@@ -78,4 +78,6 @@ router.patch('/update_visible_media',updateVisiblee)
 router.get('/view_social_media',viewSocialMedia)
 router.patch('/update_social_media',updateSocialMedia)
 router.delete('/delete_social_media',deleteSocialMedia)
+router.get('/sm_web',viewSocialMediaToWebsite)
+
 module.exports = router
