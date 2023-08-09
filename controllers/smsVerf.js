@@ -239,6 +239,7 @@ exports.resendOTP = async (req, res) => {
 };
 
 
+
 //API TO VERIFY OTP
 
 exports.verifyOTP = async (req, res) => {
