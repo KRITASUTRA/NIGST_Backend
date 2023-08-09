@@ -50,8 +50,6 @@ exports.updateVisiblee = async (req, res) => {
 
     const uMedia = await connection.query(updateSocial, [Svisible, SID]);
 
- 
-
     return res.status(200).send({ message: 'Successfully Updated!' });
   } catch (error) {
     console.error(error);
