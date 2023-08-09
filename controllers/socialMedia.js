@@ -50,9 +50,7 @@ exports.updateVisiblee = async (req, res) => {
 
     const uMedia = await connection.query(updateSocial, [Svisible, SID]);
 
-    if (uMedia.rowCount === 0) {
-      return res.status(404).send({ message: 'Social media data not found or no changes were made.' });
-    }
+ 
 
     return res.status(200).send({ message: 'Successfully Updated!' });
   } catch (error) {
@@ -124,9 +122,6 @@ exports.updateSocialMedia = async (req, res) => {
 
     const uMedia = await connection.query(updateMedia, [name, url, color, SID]);
 
-    if (uMedia.rowCount === 0) {
-      return res.status(404).send({ message: 'Social media data not found or no changes were made.' });
-    }
 
     return res.status(200).send({ message: 'Successfully Updated!' });
   } catch (error) {
