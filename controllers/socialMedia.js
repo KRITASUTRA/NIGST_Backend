@@ -85,26 +85,25 @@ finally{
 }
 }
 
-exports.viewSocialMediaToWebsite=async(req,res)=>{
-  let connection
-try {
-  const allMedia="SELECT * from social_media WHERE visibility=true order by icon_name ASC"
-  connection=await pool.connect()
-  
-  
-  const alMedia=await connection.query(allMedia)
-  return res.status(200).send({data:alMedia.rows})
+exports.viewMediaForWeb = async (req, res) => {
+  let connection;
+  try {
+    const allViewMedia = "SELECT sm_id as id,icon_name as name,icon_url as url,icon_color as color FROM social_media WHERE visibility=true";
+    connection = await pool.connect();
+    const allMedia = await connection.query(allViewMedia);
+    if (allMedia.rowCount === 0) {
+      return res.status(404).send({ message: 'No data found' });
+    }
+    return res.status(200).send({data:allMedia.rows})
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
   }
- catch (error) {
-  console.error(error)
-  return res.status(500).send({message:'Internal Server Error!.'})
-}
-finally{
-  if (connection) {
-      await connection.release()
-  }
-}
-}
+};
 
 
 exports.updateSocialMedia = async (req, res) => {

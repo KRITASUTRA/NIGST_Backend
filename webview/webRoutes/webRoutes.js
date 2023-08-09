@@ -79,7 +79,7 @@ router.patch('/update_visible_media',updateVisiblee)
 router.get('/view_social_media',viewSocialMedia)
 router.patch('/update_social_media',updateSocialMedia)
 router.delete('/delete_social_media',deleteSocialMedia)
-router.patch('/web_view_media',viewMediaForWeb)
+router.get('/web_view_media',viewMediaForWeb)
 
 module.exports = router
 
