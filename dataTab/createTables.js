@@ -607,6 +607,7 @@ await client.query(`
     c_id varchar(255),
     c_description text,
     path varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
 )

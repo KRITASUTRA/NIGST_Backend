@@ -13,7 +13,7 @@ const { CreateMarquee, viewMarqueeToAdmin, editMarqueeDetails, editMarqueeVisibi
 const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, deleteCarousel } = require('../Carousel')
 const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, deleteSocialMedia, viewMediaForWeb } = require('../../controllers/socialMedia')
 const { createSection } = require('../../controllers/aboutSection')
-const { createCampus } = require('../../controllers/campus')
+const { createCampus, viewCampus, updateCampus, deleteCampus } = require('../../controllers/campus')
 
 const router = express.Router()
 
@@ -86,7 +86,9 @@ router.get('/web_view_media',viewMediaForWeb)
 // router.post('/create_about_section',createSection)
 
 router.post('/create_campus',campus_upload,createCampus)
-
+router.get('/view_campus',viewCampus)
+router.patch('/update_campus',updateCampus)
+router.delete('/delete_campus',deleteCampus)
 
 module.exports = router
 
