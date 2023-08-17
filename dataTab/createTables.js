@@ -590,6 +590,59 @@ await client.query(
   )`
 )
 
+await client.query(`
+  CREATE TABLE IF NOT EXISTS about_section(
+    id SERIAL PRIMARY KEY,
+    a_id varchar(255),
+    a_name varchar(255),
+    path varchar(255),
+    a_description text,
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
+await client.query(`
+  CREATE TABLE IF NOT EXISTS campus(
+    id SERIAL PRIMARY KEY,
+    c_id varchar(255),
+    c_description text,
+    path varchar(255),
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
+await client.query(`
+  CREATE TABLE IF NOT EXISTS sports_faculty(
+    id SERIAL PRIMARY KEY,
+    s_id varchar(255),
+    s_description text,
+    path varchar(255),
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
+await client.query(`
+  CREATE TABLE IF NOT EXISTS hostel_nigst(
+    id SERIAL PRIMARY KEY,
+    h_id varchar(255),
+    h_description text,
+    path varchar(255),
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
+await client.query(`
+  CREATE TABLE IF NOT EXISTS governance(
+    id SERIAL PRIMARY KEY,
+    g_id varchar(255),
+    g_name varchar(255),
+    g_designation varchar(255),
+    g_position varchar(255),
+    path varchar(255),
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
   console.log('Tables created successfully')
   }
 

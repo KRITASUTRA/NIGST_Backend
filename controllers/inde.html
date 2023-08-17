@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload Form</title>
+</head>
+<body>
+    <h2>Upload an Image with Description</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="image">Select an image:</label>
+        <input type="file" name="image" id="image" accept="image/*" required><br><br>
+        
+        <label for="description">Image Description:</label><br>
+        <textarea name="description" id="description" rows="4" cols="50" required></textarea><br><br>
+        
+        <input type="submit" value="Upload">
+    </form>
+    
+    <h2>Image Preview</h2>
+    <img id="imagePreview" src="#" alt="Preview" style="max-width: 300px; display: none;">
+    
+    <script>
+        const imageInput = document.getElementById('image');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadForm = document.getElementById('uploadForm');
+
+        imageInput.addEventListener('change', function() {
+            if (imageInput.files && imageInput.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        });
+
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(uploadForm);
+            
+            fetch('http://localhost:4000/viewweb/create_campus', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // You can handle the server response here
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
