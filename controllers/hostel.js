@@ -4,25 +4,25 @@ const { S3Client, GetObjectCommand,DeleteObjectCommand } = require('@aws-sdk/cli
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // =============create===============================
-exports.createCampus = async (req, res) => {
+exports.createNigstHostel = async (req, res) => {
   let connection;
   try {
-    const { Cdescription } = req.body;
+    const { description } = req.body;
     const image = req.files.image;
     const path = image[0].location;
 
     connection = await pool.connect();
 
-    let CID = 'C-' + generateNumericValue(7);
-    const check = 'SELECT * FROM campus WHERE c_id = $1';
-    let result = await connection.query(check, [CID]);
+    let SID = 'S-' + generateNumericValue(7);
+    const check = 'SELECT * FROM nigst_hostel WHERE h_id = $1';
+    let result = await connection.query(check, [HID]);
 
     while (result.rowCount > 0) {
-      CID = 'C-' + generateNumericValue(7);
-      result = await connection.query(check, [CID]);
+      HID = 'S-' + generateNumericValue(7);
+      result = await connection.query(check, [HID]);
     }
-    const insertQuery = 'INSERT INTO campus (c_id, c_description, path) VALUES ($1, $2, $3)';
-    const data = [CID,Cdescription,path];
+    const insertQuery = 'INSERT INTO nigst_hostel (h_id, h_description, path) VALUES ($1, $2, $3)';
+    const data = [HID,description,path];
     const result1 = await connection.query(insertQuery, data);
 
     return res.status(200).send({ message: 'created successfully!' });
@@ -38,21 +38,21 @@ exports.createCampus = async (req, res) => {
 }
 //=======================================view data===================================
 
-exports.viewCampus = async (req, res) => {
+exports.viewNigstHostel = async (req, res) => {
   let connection;
   try {
-    const allViewCampus = "SELECT c_id as id, c_description as description, path FROM campus WHERE visibility=true";
+    const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel WHERE visibility=true";
     connection = await pool.connect();
-    const allCampus = await connection.query(allViewCampus);
-    if (allCampus.rowCount === 0) {
+    const alHostel = await connection.query(allAboutSection);
+    if (alHostel.rowCount === 0) {
       return res.status(404).send({ message: 'No image Found' });
     }
     const imageData = [];
 
-    for (const row of allCampus.rows) {
+    for (const row of alHostel.rows) {
       const { id, description,path } = row;
       const fileUrl = path;
-      const key = 'campuss/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
       try {
         const s3Client = new S3Client({
@@ -90,77 +90,78 @@ exports.viewCampus = async (req, res) => {
 };
 
 // =======================================view for web==========================================
-exports.viewWebCampus=async(req, res)=> {
-  let connection;
-  try {
-    const allView="SELECT c_id as id,c_description as descrition,path FROM campus WHERE visibility=true";
-    connection=await pool.connect();
-    const allViewCampus= await connection.query(allView);
-    if(allViewCampus.rowCount===0){
-      return res.status(404).send({message:'No image found'})
-
-    }
-    const imageData=[]
-
-    for(const row of allViewCampus.rows){
-      const{id,description,path}=row;
-      const fileUrl=path;
-      const key='campuss/'+ fileUrl.substring(fileUrl.lastIndexOf('/')+1);
-      try {
-        const s3Client = new S3Client({
-          region: process.env.BUCKET_REGION,
-          credentials: {
-            accessKeyId: process.env.ACCESS_KEY,
-            secretAccessKey: process.env.SECRET_ACCESS_KEY,
-          },
-        });
-
-        const command = new GetObjectCommand({
-          Bucket: process.env.BUCKET_NAME,
-          Key: key,
-        });
-        const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-
-        imageData.push({ id,description,path });
-      } catch (error) {
-        console.error(`Error retrieving file '${key}': ${error}`);
+exports.viewWebNigstHostel = async (req, res) => {
+    let connection;
+    try {
+      const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel WHERE visibility=true";
+      connection = await pool.connect();
+      const alHostel = await connection.query(allAboutSection);
+      if (alHostel.rowCount === 0) {
+        return res.status(404).send({ message: 'No image Found' });
+      }
+      const imageData = [];
+  
+      for (const row of alHostel.rows) {
+        const { id, description,path } = row;
+        const fileUrl = path;
+        const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+  
+        try {
+          const s3Client = new S3Client({
+            region: process.env.BUCKET_REGION,
+            credentials: {
+              accessKeyId: process.env.ACCESS_KEY,
+              secretAccessKey: process.env.SECRET_ACCESS_KEY,
+            },
+          });
+  
+          const command = new GetObjectCommand({
+            Bucket: process.env.BUCKET_NAME,
+            Key: key,
+          });
+          const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+  
+          imageData.push({ id,description,path });
+        } catch (error) {
+          console.error(`Error retrieving file '${key}': ${error}`);
+        }
+      }
+      if (imageData.length === 0) {
+        return res.status(404).send({ error: 'Image not found.' });
+      }
+  
+      return res.send({ data: imageData });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({ message: 'Internal server error!' });
+    } finally {
+      if (connection) {
+        await connection.release();
       }
     }
-    if (imageData.length === 0) {
-      return res.status(404).send({ error: 'Image not found.' });
-    }
-
-    return res.send({ data: imageData });
-    
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: 'Internal server error!' });
-  } finally {
-    if (connection) {
-      await connection.release();
-    }
-  }
-};  
+  }; 
 
 
 //======================================UPDATE=========================================
-exports.updateCampus= async (req, res) => {
+exports.updateNigstHostel= async (req, res) => {
   let client;
   try {
     const { description,id,visibility,path } = req.body;
-    const checkQuery = 'SELECT * FROM campus WHERE c_id = $1';
+    const checkQuery = 'SELECT * FROM nigst_hostel WHERE h_id = $1';
     const updateQuery =
-      'UPDATE campus SET c_description=$1,path=$2,visibility=$3 WHERE c_id = $4';
+      'UPDATE nigst_hostel SET h_description=$1,path=$2,visibility=$3 WHERE h_id = $4';
 
     client = await pool.connect();
+
+
 
     const checkResult = await client.query(checkQuery, [id]);
     if (checkResult.rowCount === 0) {
       return res.status(404).send({ message: 'This Project Does Not Exist!' });
     }
 
-    const campusData = checkResult.rows[0];
-    const { c_description: currentCdescription, path: currentPath, visibility: currentVisibility  } = campusData;
+    const HostelData = checkResult.rows[0];
+    const { h_description: currentCdescription, path: currentPath, visibility: currentVisibility  } = HostelData;
 
     const updatedCdescription = description || currentCdescription;
     const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility; 
@@ -182,27 +183,27 @@ exports.updateCampus= async (req, res) => {
 
 // =============================delete=======================
 
-exports.deleteCampus = async (req, res) => {
+exports.deleteNigstHostel = async (req, res) => {
   let connection;
   try {
     const { id } = req.body;
     if (!id) {
-      return res.status(400).send({ message: "Please provide the campus ID" });
+      return res.status(400).send({ message: "Please provide the Hostel ID" });
     }
     connection = await pool.connect();
-    const ExistanceID = "SELECT * FROM campus WHERE c_id=$1";
+    const ExistanceID = "SELECT * FROM nigst_hostel WHERE h_id=$1";
     const result = await connection.query(ExistanceID, [id]);
     if (result.rowCount === 0) {
-      return res.status(404).send({ message: "Campus ID does not exist!" });
+      return res.status(404).send({ message: "Nigst hostel ID does not exist!" });
     }
 
     // Retrieve the file path from the database
-    const filePathQuery = "SELECT path FROM campus WHERE c_id=$1";
+    const filePathQuery = "SELECT path FROM nigst_hostel WHERE h_id=$1";
     const filePathResult = await connection.query(filePathQuery, [id]);
     const filePath = filePathResult.rows[0].path;
 
-    const delCampus = "DELETE FROM campus WHERE c_id=$1";
-    await connection.query(delCampus, [id]);
+    const delNigstHostel = "DELETE FROM nigst_hostel WHERE h_id=$1";
+    await connection.query(delNigstHostel, [id]);
 
     // Delete file from S3
     const s3Client = new S3Client({

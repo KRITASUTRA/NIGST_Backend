@@ -597,6 +597,7 @@ await client.query(`
     a_name varchar(255),
     path varchar(255),
     a_description text,
+    visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
 )
@@ -613,11 +614,12 @@ await client.query(`
 )
 
 await client.query(`
-  CREATE TABLE IF NOT EXISTS sports_faculty(
+  CREATE TABLE IF NOT EXISTS sports_facility(
     id SERIAL PRIMARY KEY,
     s_id varchar(255),
     s_description text,
     path varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
 )

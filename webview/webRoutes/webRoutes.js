@@ -2,7 +2,7 @@ const express = require('express')
 const { viewAllDetailsFaculty } = require('../../viewList/allview')
 const { viewWebAnnouncement, viewAllWebAnnouncement, viewPDFAnnouncement, viewAllPDFs, viewArchiveToWebsite, viewArchivePDFAnnouncement } = require('../announcement')
 const { createBanner, getBanner } = require('../Banner')
-const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload } = require('../../middleware/faculty')
+const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection } = require('../../middleware/faculty')
 
 const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter, viewFooterWebsite } = require('../footer')
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
@@ -12,8 +12,10 @@ const { HeaderCreate, viewHeader, updateVisibility, updateHeader, deleteHeader, 
 const { CreateMarquee, viewMarqueeToAdmin, editMarqueeDetails, editMarqueeVisibility, viewMarqueeForWeb, deleteMarque } = require('../Marquee')
 const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, deleteCarousel } = require('../Carousel')
 const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, deleteSocialMedia, viewMediaForWeb } = require('../../controllers/socialMedia')
-const { createSection } = require('../../controllers/aboutSection')
-const { createCampus, viewCampus, updateCampus, deleteCampus } = require('../../controllers/campus')
+const { createSection, viewAboutSection, viewWebAboutSection, deleteAboutSection, updateAboutSection } = require('../../controllers/aboutSection')
+const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus } = require('../../controllers/campus')
+const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility } = require('../../controllers/sportsFacility')
+const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel } = require('../../controllers/hostel')
 
 const router = express.Router()
 
@@ -83,12 +85,28 @@ router.patch('/update_social_media',updateSocialMedia)
 router.delete('/delete_social_media',deleteSocialMedia)
 router.get('/web_view_media',viewMediaForWeb)
 
-// router.post('/create_about_section',createSection)
+router.post('/create_about_section',aboutSection,createSection)
+router.get('/view_about_section',viewAboutSection)
+router.get('/view_web_abou_section',viewWebAboutSection)
+router.patch('/update_about_section',viewWebAboutSection)
+router.delete('/delete_about_section',deleteAboutSection)
 
 router.post('/create_campus',campus_upload,createCampus)
 router.get('/view_campus',viewCampus)
 router.patch('/update_campus',updateCampus)
 router.delete('/delete_campus',deleteCampus)
+router.get('/view_web_campus',viewWebCampus)
 
+router.post('/create_sports_facility',createSportsFacility);
+router.get('/view_sports_facility',viewSportsFacility);
+router.get('/view_web_sports_facility',viewWebSportsFacility);
+router.patch('/update_sports_facility',updateSportsFacility);
+router.delete('/delete_sports_facility',deleteSportsFacility);
+
+router.post('/create_nigst_hostel',createNigstHostel);
+router.get('/view_nigst_hostel',viewNigstHostel);
+router.get('/view_web_nigst_hostel',viewWebNigstHostel);
+router.patch('/update_nigst_hostel',updateNigstHostel);
+router.delete('/delete_nigst_hostel',deleteNigstHostel);
 module.exports = router
 

@@ -228,10 +228,11 @@ const corrigendum = createUploadMiddleware('tender/corrigendum');
 const reportSubmit= createUploadMiddleware('report')
 const bannerUpload=createUploadMiddleware('banner')
 
-const SOI_PROJECT_UPLOAD=createUploadMiddleware('soi_project')
-const headerUpload=createUploadMiddleware('header_upload')
-const homeCarousel=createUploadMiddleware('home_carousel')
-const campus_upload=createUploadMiddleware('campuss')
+const SOI_PROJECT_UPLOAD=createUploadMiddleware('soi_project');
+const headerUpload=createUploadMiddleware('header_upload');
+const homeCarousel=createUploadMiddleware('home_carousel');
+const campus_upload=createUploadMiddleware('campuss');
+const aboutSection=createUploadMiddleware('about_section');
+const sportsFacility=createUploadMiddleware('sports_facility')
 
-
-module.exports = { uploadFacultyPhoto, uploadStudentPhoto,uploadAnnouncement,galleryUpload,videoUpload,pdfUpload,tenderpdf,corrigendum,reportSubmit,bannerUpload,SOI_PROJECT_UPLOAD,headerUpload,homeCarousel, campus_upload};
+module.exports = { uploadFacultyPhoto, uploadStudentPhoto,uploadAnnouncement,galleryUpload,videoUpload,pdfUpload,tenderpdf,corrigendum,reportSubmit,bannerUpload,SOI_PROJECT_UPLOAD,headerUpload,homeCarousel, campus_upload,aboutSection},sportsFacility;
