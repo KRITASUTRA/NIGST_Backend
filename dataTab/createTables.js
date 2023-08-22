@@ -630,18 +630,46 @@ await client.query(`
     h_id varchar(255),
     h_description text,
     path varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
 )
 
 await client.query(`
-  CREATE TABLE IF NOT EXISTS governance(
+  CREATE TABLE IF NOT EXISTS board_of_governance(
     id SERIAL PRIMARY KEY,
     g_id varchar(255),
     g_name varchar(255),
     g_designation varchar(255),
     g_position varchar(255),
     path varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
+await client.query(`
+  CREATE TABLE IF NOT EXISTS board_of_Evaluation(
+    id SERIAL PRIMARY KEY,
+    g_id varchar(255),
+    g_name varchar(255),
+    g_designation varchar(255),
+    g_position varchar(255),
+    path varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
+    date TIMESTAMP DEFAULT NOW()
+  )`
+)
+
+await client.query(`
+  CREATE TABLE IF NOT EXISTS board_of_studies(
+    id SERIAL PRIMARY KEY,
+    g_id varchar(255),
+    g_name varchar(255),
+    g_designation varchar(255),
+    g_position varchar(255),
+    path varchar(255),
+    visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
 )

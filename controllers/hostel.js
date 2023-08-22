@@ -13,12 +13,12 @@ exports.createNigstHostel = async (req, res) => {
 
     connection = await pool.connect();
 
-    let SID = 'S-' + generateNumericValue(7);
+    let HID = 'H-' + generateNumericValue(7);
     const check = 'SELECT * FROM nigst_hostel WHERE h_id = $1';
     let result = await connection.query(check, [HID]);
 
     while (result.rowCount > 0) {
-      HID = 'S-' + generateNumericValue(7);
+      HID = 'H-' + generateNumericValue(7);
       result = await connection.query(check, [HID]);
     }
     const insertQuery = 'INSERT INTO nigst_hostel (h_id, h_description, path) VALUES ($1, $2, $3)';
