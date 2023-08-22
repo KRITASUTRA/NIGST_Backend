@@ -41,7 +41,7 @@ exports.createCampus = async (req, res) => {
 exports.viewCampus = async (req, res) => {
   let connection;
   try {
-    const allViewCampus = "SELECT c_id as id, c_description as description, path,visibility FROM campus WHERE visibility=true";
+    const allViewCampus = "SELECT c_id as id, c_description as description, path,visibility FROM campus";
     connection = await pool.connect();
     const allCampus = await connection.query(allViewCampus);
     if (allCampus.rowCount === 0) {
