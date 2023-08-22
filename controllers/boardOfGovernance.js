@@ -4,7 +4,7 @@ const { S3Client, GetObjectCommand,DeleteObjectCommand } = require('@aws-sdk/cli
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // =============create===============================
-exports.createNigstHostel = async (req, res) => {
+exports.createGovernance = async (req, res) => {
   let connection;
   try {
     const { name,description,position } = req.body;

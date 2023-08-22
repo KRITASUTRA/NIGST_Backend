@@ -2,7 +2,7 @@ const express = require('express')
 const { viewAllDetailsFaculty } = require('../../viewList/allview')
 const { viewWebAnnouncement, viewAllWebAnnouncement, viewPDFAnnouncement, viewAllPDFs, viewArchiveToWebsite, viewArchivePDFAnnouncement } = require('../announcement')
 const { createBanner, getBanner } = require('../Banner')
-const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection } = require('../../middleware/faculty')
+const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee } = require('../../middleware/faculty')
 
 const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter, viewFooterWebsite } = require('../footer')
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
@@ -16,6 +16,7 @@ const { createSection, viewAboutSection, viewWebAboutSection, deleteAboutSection
 const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus } = require('../../controllers/campus')
 const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility } = require('../../controllers/sportsFacility')
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel } = require('../../controllers/hostel')
+const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance } = require('../../controllers/boardOfGovernance')
 
 const router = express.Router()
 
@@ -97,16 +98,22 @@ router.patch('/update_campus',updateCampus)
 router.delete('/delete_campus',deleteCampus)
 router.get('/view_web_campus',viewWebCampus)
 
-router.post('/create_sports_facility',createSportsFacility);
+router.post('/create_sports_facility',sportsFacility,createSportsFacility);
 router.get('/view_sports_facility',viewSportsFacility);
 router.get('/view_web_sports_facility',viewWebSportsFacility);
 router.patch('/update_sports_facility',updateSportsFacility);
 router.delete('/delete_sports_facility',deleteSportsFacility);
 
-router.post('/create_nigst_hostel',createNigstHostel);
+router.post('/create_nigst_hostel',nigstHostell,createNigstHostel);
 router.get('/view_nigst_hostel',viewNigstHostel);
 router.get('/view_web_nigst_hostel',viewWebNigstHostel);
 router.patch('/update_nigst_hostel',updateNigstHostel);
 router.delete('/delete_nigst_hostel',deleteNigstHostel);
+
+router.post('/create_governance',boardGovernancee,createGovernance)
+router.get('/view_governance',viewGovernance)
+router.get('/view_web_governance',viewWebGovernance)
+router.patch('/update_governance',updateGovernance)
+router.delete('/delete_governance',deleteGovernance)
 module.exports = router
 
