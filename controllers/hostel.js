@@ -41,9 +41,9 @@ exports.createNigstHostel = async (req, res) => {
 exports.viewNigstHostel = async (req, res) => {
   let connection;
   try {
-    const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel WHERE visibility=true";
+    const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel";
     connection = await pool.connect();
-    const alHostel = await connection.query(allAboutSection);
+    const alHostel = await connection.query(allHostel);
     if (alHostel.rowCount === 0) {
       return res.status(404).send({ message: 'No image Found' });
     }
@@ -95,7 +95,7 @@ exports.viewWebNigstHostel = async (req, res) => {
     try {
       const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel WHERE visibility=true";
       connection = await pool.connect();
-      const alHostel = await connection.query(allAboutSection);
+      const alHostel = await connection.query(allHostel);
       if (alHostel.rowCount === 0) {
         return res.status(404).send({ message: 'No image Found' });
       }

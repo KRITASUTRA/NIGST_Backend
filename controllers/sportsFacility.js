@@ -90,9 +90,9 @@ exports.createSportsFacility = async (req, res) => {
 exports.viewSportsFacility = async (req, res) => {
   let connection;
   try {
-    const allAboutSection = "SELECT s_id as id, s_description as description, path FROM about_section WHERE visibility=true";
+    const allSports = "SELECT s_id as id, s_description as description, path FROM sports_facility";
     connection = await pool.connect();
-    const allFacility = await connection.query(allAboutSection);
+    const allFacility = await connection.query(allSports);
     if (allFacility.rowCount === 0) {
       return res.status(404).send({ message: 'No image Found' });
     }
@@ -143,9 +143,9 @@ exports.viewSportsFacility = async (req, res) => {
 exports.viewWebSportsFacility = async (req, res) => {
     let connection;
     try {
-      const allAboutSection = "SELECT s_id as id, s_description as description, path FROM about_section WHERE visibility=true";
+      const allSports = "SELECT s_id as id, s_description as description, path FROM sports_facility WHERE visibility=true";
       connection = await pool.connect();
-      const allFacility = await connection.query(allAboutSection);
+      const allFacility = await connection.query(allSports);
       if (allFacility.rowCount === 0) {
         return res.status(404).send({ message: 'No image Found' });
       }

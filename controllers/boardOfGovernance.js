@@ -41,7 +41,7 @@ exports.createNigstHostel = async (req, res) => {
 exports.viewGovernance = async (req, res) => {
   let connection;
   try {
-    const allGovernance = "SELECT g_id as id, g_name as name, g_description as description, path FROM board_of_governance WHERE visibility=true";
+    const allGovernance = "SELECT g_id as id, g_name as name, g_description as description, path FROM board_of_governance";
     connection = await pool.connect();
     const alGovern = await connection.query(allGovernance);
     if (alGovern.rowCount === 0) {
