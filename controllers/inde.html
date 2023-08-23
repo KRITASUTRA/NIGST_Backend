@@ -10,8 +10,8 @@
   <form id="createCampusForm">
     <!-- <label for="name">Name:</label>
     <input type="text" id="name" name="name" required> -->
-    <label for="Sdescription">Campus Description:</label>
-    <input type="text" id="Sdescription" name="Sdescription" required>
+    <label for="Cdescription">Campus Description:</label>
+    <input type="text" id="Cdescription" name="Cdescription" required>
     
     <label for="image">Campus Image:</label>
     <input type="file" id="image" name="image" accept="image/*" required>
@@ -28,7 +28,7 @@
       const formData = new FormData(event.target);
 
       try {
-        const response = await fetch("http://localhost:4000/viewweb/create_sports_facility", {
+        const response = await fetch("http://localhost:4000/viewweb/create_campus", {
           method: "POST",
           body: formData,
         });

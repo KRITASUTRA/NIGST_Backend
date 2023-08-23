@@ -90,22 +90,22 @@ exports.viewCampus = async (req, res) => {
 };
 
 // =======================================view for web==========================================
-exports.viewWebCampus=async(req, res)=> {
+exports.viewWebCampus = async (req, res) => {
   let connection;
   try {
-    const allView="SELECT c_id as id,c_description as descrition,path FROM campus WHERE visibility=true";
-    connection=await pool.connect();
-    const allViewCampus= await connection.query(allView);
-    if(allViewCampus.rowCount===0){
-      return res.status(404).send({message:'No image found'})
-
+    const allViewCampus = "SELECT c_id as id, c_description as description, path,visibility FROM campus WHERE visibility=true";
+    connection = await pool.connect();
+    const allCampus = await connection.query(allViewCampus);
+    if (allCampus.rowCount === 0) {
+      return res.status(404).send({ message: 'No image Found' });
     }
-    const imageData=[]
+    const imageData = [];
 
-    for(const row of allViewCampus.rows){
-      const{id,description,path}=row;
-      const fileUrl=path;
-      const key='campuss/'+ fileUrl.substring(fileUrl.lastIndexOf('/')+1);
+    for (const row of allCampus.rows) {
+      const { id, description,path } = row;
+      const fileUrl = path;
+      const key = 'campuss/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+
       try {
         const s3Client = new S3Client({
           region: process.env.BUCKET_REGION,
@@ -131,7 +131,6 @@ exports.viewWebCampus=async(req, res)=> {
     }
 
     return res.send({ data: imageData });
-    
   } catch (error) {
     console.log(error);
     return res.status(500).send({ message: 'Internal server error!' });
@@ -140,7 +139,7 @@ exports.viewWebCampus=async(req, res)=> {
       await connection.release();
     }
   }
-};  
+};
 
 
 //======================================UPDATE=========================================
