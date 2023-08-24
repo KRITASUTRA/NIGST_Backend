@@ -2,7 +2,7 @@ const express = require('express')
 const { viewAllDetailsFaculty } = require('../../viewList/allview')
 const { viewWebAnnouncement, viewAllWebAnnouncement, viewPDFAnnouncement, viewAllPDFs, viewArchiveToWebsite, viewArchivePDFAnnouncement } = require('../announcement')
 const { createBanner, getBanner } = require('../Banner')
-const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee } = require('../../middleware/faculty')
+const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee, boardOfEvaluation } = require('../../middleware/faculty')
 
 const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter, viewFooterWebsite } = require('../footer')
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
@@ -17,6 +17,7 @@ const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus } = 
 const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility } = require('../../controllers/sportsFacility')
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel } = require('../../controllers/hostel')
 const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance } = require('../../controllers/boardOfGovernance')
+const { createEvaluation } = require('../../controllers/boardOfEvaluation')
 
 const router = express.Router()
 
@@ -94,7 +95,7 @@ router.delete('/delete_about_section',deleteAboutSection)
 
 router.post('/create_campus',campus_upload,createCampus)
 router.get('/view_campus',viewCampus)
-router.patch('/update_campus',updateCampus)
+router.patch('/update_campus',campus_upload,updateCampus)
 router.delete('/delete_campus',deleteCampus)
 router.get('/view_web_campus',viewWebCampus)
 
@@ -115,5 +116,7 @@ router.get('/view_governance',viewGovernance)
 router.get('/view_web_governance',viewWebGovernance)
 router.patch('/update_governance',updateGovernance)
 router.delete('/delete_governance',deleteGovernance)
+
+router.post('/create_board_of_evaluation',boardOfEvaluation,createEvaluation)
 module.exports = router
 

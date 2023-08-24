@@ -143,40 +143,65 @@ exports.viewWebCampus = async (req, res) => {
 
 
 //======================================UPDATE=========================================
-exports.updateCampus= async (req, res) => {
-  let client;
+
+const { validationResult } = require('express-validator');
+
+exports.updateCampus = async (req, res) => {
   try {
-    const { description,id,visibility,path } = req.body;
+    // Validate inputs using express-validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { description, id, visibility} = req.body;
+     const image = req.files.image;
+     const path = image[0].location;
     const checkQuery = 'SELECT * FROM campus WHERE c_id = $1';
     const updateQuery =
-      'UPDATE campus SET c_description=$1,path=$2,visibility=$3 WHERE c_id = $4';
+      'UPDATE campus SET c_description=$1, path=$2, visibility=$3 WHERE c_id = $4';
 
-    client = await pool.connect();
+    const client = await pool.connect();
 
-    const checkResult = await client.query(checkQuery, [id]);
-    if (checkResult.rowCount === 0) {
-      return res.status(404).send({ message: 'This Project Does Not Exist!' });
-    }
+    try {
+      const checkResult = await client.query(checkQuery, [id]);
 
-    const campusData = checkResult.rows[0];
-    const { c_description: currentCdescription, path: currentPath, visibility: currentVisibility  } = campusData;
+      if (checkResult.rowCount === 0) {
+        return res.status(404).json({ message: 'This Project Does Not Exist!' });
+      }
 
-    const updatedCdescription = description || currentCdescription;
-    const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility; 
-    const updatePath = path || currentPath;
+      const campusData = checkResult.rows[0];
+      const {
+        c_description: currentCdescription,
+        path: currentPath,
+        visibility: currentVisibility,
+      } = campusData;
 
-    await client.query(updateQuery, [ updatedCdescription,  updatePath,updatedVisibility, id]);
+      const updatedCdescription = description || currentCdescription;
+      const updatedVisibility =
+        visibility !== undefined ? visibility : currentVisibility;
+      const updatePath = path || currentPath;
 
-    return res.status(200).send({ message: 'Successfully Updated!' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send({ message: 'Internal server error!' });
-  } finally {
-    if (client) {
+      await client.query(updateQuery, [
+        updatedCdescription,
+        updatePath,
+        updatedVisibility,
+        id,
+      ]);
+
+      return res.status(200).json({ message: 'Successfully Updated!' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error!' });
+    } finally {
       client.release();
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error!' });
   }
 };
+
 
 
 // =============================delete=======================

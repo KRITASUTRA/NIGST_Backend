@@ -8,12 +8,13 @@
 <body>
   <h1>Create Campus</h1>
   <form id="createCampusForm">
-    <!-- <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required> -->
-    <label for="Cdescription">Campus Description:</label>
-    <input type="text" id="Cdescription" name="Cdescription" required>
-    
-    <label for="image">Campus Image:</label>
+    <label for="description">description:</label>
+    <input type="text" id="description" name="description" required>
+    <label for="id">id:</label>
+    <input type="text" id="id" name="id" required>
+    <label for="visibility">visibility:</label>
+    <input type="text" id="visibility" name="visibility" required>
+    <label for="image">Image:</label>
     <input type="file" id="image" name="image" accept="image/*" required>
     
     <button type="submit">Create AboutSection</button>
@@ -28,8 +29,8 @@
       const formData = new FormData(event.target);
 
       try {
-        const response = await fetch("http://localhost:4000/viewweb/create_campus", {
-          method: "POST",
+        const response = await fetch("http://localhost:4000/viewweb/update_campus", {
+          method: "PATCH",
           body: formData,
         });
 

@@ -28,7 +28,7 @@ exports.createGovernance = async (req, res) => {
     return res.status(200).send({ message: 'created successfully!' });
   } catch (error) {
     console.error(error);
-    return res.status(400).send({ message: 'Error creating campus!' });
+    return res.status(400).send({ message: 'Error creating board of governance!!' });
   }
   finally {
     if (connection) {
@@ -52,7 +52,7 @@ exports.viewGovernance = async (req, res) => {
     for (const row of alGovern.rows) {
       const { id, name, description,position, path } = row;
       const fileUrl = path;
-      const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      const key = '/governance' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
       try {
         const s3Client = new S3Client({
