@@ -9,7 +9,7 @@ exports.createCampus = async (req, res) => {
   try {
     const { Cdescription } = req.body;
     const image = req.files.image;
-    const path = image[0].location;
+    const path = image.map(image => image.location);
 
     connection = await pool.connect();
 
