@@ -13,7 +13,7 @@ const { CreateMarquee, viewMarqueeToAdmin, editMarqueeDetails, editMarqueeVisibi
 const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, deleteCarousel } = require('../Carousel')
 const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, deleteSocialMedia, viewMediaForWeb } = require('../../controllers/socialMedia')
 const { createSection, viewAboutSection, viewWebAboutSection, deleteAboutSection, updateAboutSection } = require('../../controllers/aboutSection')
-const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus } = require('../../controllers/campus')
+const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus, updateVisibilityCampus } = require('../../controllers/campus')
 const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility } = require('../../controllers/sportsFacility')
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel } = require('../../controllers/hostel')
 const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance } = require('../../controllers/boardOfGovernance')
@@ -98,6 +98,7 @@ router.get('/view_campus',viewCampus)
 router.patch('/update_campus',campus_upload,updateCampus)
 router.delete('/delete_campus',deleteCampus)
 router.get('/view_web_campus',viewWebCampus)
+router.patch('/update_visibility_campus',updateVisibilityCampus)
 
 router.post('/create_sports_facility',sportsFacility,createSportsFacility);
 router.get('/view_sports_facility',viewSportsFacility);

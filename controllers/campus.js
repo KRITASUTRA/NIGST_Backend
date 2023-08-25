@@ -154,12 +154,12 @@ exports.updateCampus = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { description, id, visibility} = req.body;
+    const { description, id} = req.body;
      const image = req.files.image;
      const path = image[0].location;
     const checkQuery = 'SELECT * FROM campus WHERE c_id = $1';
     const updateQuery =
-      'UPDATE campus SET c_description=$1, path=$2, visibility=$3 WHERE c_id = $4';
+      'UPDATE campus SET c_description=$1, path=$2 WHERE c_id = $3';
 
     const client = await pool.connect();
 
@@ -173,23 +173,69 @@ exports.updateCampus = async (req, res) => {
       const campusData = checkResult.rows[0];
       const {
         c_description: currentCdescription,
-        path: currentPath,
-        visibility: currentVisibility,
+        path: currentPath
       } = campusData;
 
       const updatedCdescription = description || currentCdescription;
-      const updatedVisibility =
-        visibility !== undefined ? visibility : currentVisibility;
+     
       const updatePath = path || currentPath;
 
       await client.query(updateQuery, [
         updatedCdescription,
         updatePath,
-        updatedVisibility,
-        id,
+        id
       ]);
 
       return res.status(200).json({ message: 'Successfully Updated!' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error!' });
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error!' });
+  }
+};
+
+
+
+exports.updateVisibilityCampus = async (req, res) => {
+  try {
+    // Validate inputs using express-validator
+    
+
+    const { id, visibility} = req.body;
+     
+    const checkQuery = 'SELECT * FROM campus WHERE c_id = $1';
+    const updateQuery =
+      'UPDATE campus SET  visibility=$1 WHERE c_id = $2';
+
+    const client = await pool.connect();
+
+    try {
+      const checkResult = await client.query(checkQuery, [id]);
+
+      if (checkResult.rowCount === 0) {
+        return res.status(404).json({ message: 'This Project Does Not Exist!' });
+      }
+
+      const campusData = checkResult.rows[0];
+      const {
+        visibility: currentVisibility,
+      } = campusData;
+
+      
+      const updatedVisibility =
+        visibility !== undefined ? visibility : currentVisibility;
+
+      await client.query(updateQuery, [
+        updatedVisibility,
+        id
+      ]);
+
+      return res.status(200).json({ message: 'Successfully Visibility Updated!' });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: 'Internal server error!' });
