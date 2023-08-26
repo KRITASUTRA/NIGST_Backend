@@ -625,7 +625,7 @@ await client.query(`
 )
 
 await client.query(`
-  CREATE TABLE IF NOT EXISTS hostel_nigst(
+  CREATE TABLE IF NOT EXISTS nigst_hostel(
     id SERIAL PRIMARY KEY,
     h_id varchar(255),
     h_description text,

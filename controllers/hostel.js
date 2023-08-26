@@ -52,7 +52,7 @@ exports.viewNigstHostel = async (req, res) => {
     for (const row of alHostel.rows) {
       const { id, description,path } = row;
       const fileUrl = path;
-      const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      const key = 'nigst_hostel/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
       try {
         const s3Client = new S3Client({

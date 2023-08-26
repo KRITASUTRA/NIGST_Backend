@@ -109,7 +109,7 @@ router.delete('/delete_sports_facility',deleteSportsFacility);
 router.post('/create_nigst_hostel',nigstHostell,createNigstHostel);
 router.get('/view_nigst_hostel',viewNigstHostel);
 router.get('/view_web_nigst_hostel',viewWebNigstHostel);
-router.patch('/update_nigst_hostel',updateNigstHostel);
+router.patch('/update_nigst_hostel',nigstHostell,updateNigstHostel);
 router.delete('/delete_nigst_hostel',deleteNigstHostel);
 
 router.post('/create_governance',boardGovernancee,createGovernance)
