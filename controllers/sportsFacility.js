@@ -2,6 +2,7 @@ const pool = require("../config/pool");
 const generateNumericValue = require("../generator/NumericId");
 const { S3Client, GetObjectCommand,DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { validationResult } = require('express-validator');
 
 // =============create===============================
 exports.createSportsFacility=async(req,res)=>{
@@ -195,24 +196,18 @@ exports.viewWebSportsFacility = async (req, res) => {
 //   }
 // };
 
-const { validationResult } = require('express-validator');
+
 
 exports.updateSportsFacility = async (req, res) => {
   try {
-    // Validate inputs using express-validator
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
 
     const { description, id, visibility } = req.body;
     const image = req.files && req.files.image; // Check if req.files is defined
-
+    
     // Check if image file is present
-    if (!image) {
-      return res.status(400).json({ message: 'Image file is required!' });
-    }
-
+    // if (!image) {
+    //   return res.status(400).json({ message: 'Image file is required!' });
+    // }
     const path = image[0].location;
     const checkQuery = 'SELECT * FROM sports_facility WHERE s_id = $1';
     const updateQuery =
@@ -222,30 +217,28 @@ exports.updateSportsFacility = async (req, res) => {
 
     try {
       const checkResult = await client.query(checkQuery, [id]);
-
+      
       if (checkResult.rowCount === 0) {
         return res.status(404).json({ message: 'This Project Does Not Exist!' });
       }
 
       const sportsData = checkResult.rows[0];
       const {
-        c_description: currentCdescription,
+        s_description: currentCdescription,
         path: currentPath,
         visibility: currentVisibility,
       } = sportsData;
 
       const updatedCdescription = description || currentCdescription;
-
       const updatePath = path || currentPath;
-      const updatedVisibility =
-        visibility !== undefined ? visibility : currentVisibility;
+      const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility;
+
       await client.query(updateQuery, [
         updatedCdescription,
         updatePath,
         updatedVisibility, // Changed from updateVisibility to updatedVisibility
-        id,
+        id
       ]);
-
       return res.status(200).json({ message: 'Successfully Updated!' });
     } catch (error) {
       console.error(error);
