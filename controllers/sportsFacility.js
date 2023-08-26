@@ -4,61 +4,12 @@ const { S3Client, GetObjectCommand,DeleteObjectCommand } = require('@aws-sdk/cli
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // =============create===============================
-exports.createSportsFacility = async (req, res) => {
+exports.createSportsFacility=async(req,res)=>{
   let connection;
   try {
-    const { Sdescription } = req.body;
+    const { description } = req.body;
     const image = req.files.image;
-    const path = image[0].location;exports.viewNigstHostel = async (req, res) => {
-        let connection;
-        try {
-          const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel WHERE visibility=true";
-          connection = await pool.connect();
-          const alHostel = await connection.query(allAboutSection);
-          if (alHostel.rowCount === 0) {
-            return res.status(404).send({ message: 'No image Found' });
-          }
-          const imageData = [];
-      
-          for (const row of alHostel.rows) {
-            const { id, description,path } = row;
-            const fileUrl = path;
-            const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-      
-            try {
-              const s3Client = new S3Client({
-                region: process.env.BUCKET_REGION,
-                credentials: {
-                  accessKeyId: process.env.ACCESS_KEY,
-                  secretAccessKey: process.env.SECRET_ACCESS_KEY,
-                },
-              });
-      
-              const command = new GetObjectCommand({
-                Bucket: process.env.BUCKET_NAME,
-                Key: key,
-              });
-              const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-      
-              imageData.push({ id,description,path });
-            } catch (error) {
-              console.error(`Error retrieving file '${key}': ${error}`);
-            }
-          }
-          if (imageData.length === 0) {
-            return res.status(404).send({ error: 'Image not found.' });
-          }
-      
-          return res.send({ data: imageData });
-        } catch (error) {
-          console.log(error);
-          return res.status(500).send({ message: 'Internal server error!' });
-        } finally {
-          if (connection) {
-            await connection.release();
-          }
-        }
-      };
+    const path = image[0].location;
 
     connection = await pool.connect();
 
@@ -71,37 +22,30 @@ exports.createSportsFacility = async (req, res) => {
       result = await connection.query(check, [SID]);
     }
     const insertQuery = 'INSERT INTO sports_facility (s_id, s_description, path) VALUES ($1, $2, $3)';
-    const data = [SID,Sdescription,path];
+    const data = [SID,description,path];
     const result1 = await connection.query(insertQuery, data);
 
     return res.status(200).send({ message: 'created successfully!' });
   } catch (error) {
-    console.error(error);
-    return res.status(400).send({ message: 'Error creating campus!' });
+    
   }
-  finally {
-    if (connection) {
-      await connection.release();
-    }
-}
 }
 //=======================================view data===================================
 
 exports.viewSportsFacility = async (req, res) => {
-  let connection;
   try {
-    const allSports = "SELECT s_id as id, s_description as description, path FROM sports_facility";
+    const allViewFacility = "SELECT s_id as id, s_description as description, path,visibility FROM sports_facility";
     connection = await pool.connect();
-    const allFacility = await connection.query(allSports);
+    const allFacility = await connection.query(allViewFacility);
     if (allFacility.rowCount === 0) {
       return res.status(404).send({ message: 'No image Found' });
     }
     const imageData = [];
 
     for (const row of allFacility.rows) {
-      const { id, description,path } = row;
+      const { id, description,path,visibility } = row;
       const fileUrl = path;
-      const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      const key = 'sports_facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
       try {
         const s3Client = new S3Client({
@@ -118,7 +62,7 @@ exports.viewSportsFacility = async (req, res) => {
         });
         const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
 
-        imageData.push({ id,description,path });
+        imageData.push({ id,description,path,visibility });
       } catch (error) {
         console.error(`Error retrieving file '${key}': ${error}`);
       }
@@ -154,7 +98,7 @@ exports.viewWebSportsFacility = async (req, res) => {
       for (const row of allFacility.rows) {
         const { id, description,path } = row;
         const fileUrl = path;
-        const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+        const key = 'sports_facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
   
         try {
           const s3Client = new S3Client({
@@ -192,40 +136,126 @@ exports.viewWebSportsFacility = async (req, res) => {
   };
 
 //======================================UPDATE=========================================
-exports.updateSportsFacility= async (req, res) => {
-  let client;
+// const { validationResult } = require('express-validator');
+
+
+// exports.updateSportsFacility = async (req, res) => {
+//   try {
+//     // Validate inputs using express-validator
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({ errors: errors.array() });
+//     }
+
+//     const { description, id,visibility} = req.body;
+//      const image = req.files.image;
+//      const path = image[0].location;
+//     const checkQuery = 'SELECT * FROM sports_facility WHERE s_id = $1';
+//     const updateQuery =
+//       'UPDATE sports_facility SET s_description=$1, path=$2,visibility=$3 WHERE s_id = $4';
+
+//     const client = await pool.connect();
+
+//     try {
+//       const checkResult = await client.query(checkQuery, [id]);
+
+//       if (checkResult.rowCount === 0) {
+//         return res.status(404).json({ message: 'This Project Does Not Exist!' });
+//       }
+
+//       const sportsData = checkResult.rows[0];
+//       const {
+//         c_description: currentCdescription,
+//         path: currentPath,
+//         visibility:currentVisibility,
+//       } = sportsData;
+
+//       const updatedCdescription = description || currentCdescription;
+     
+//       const updatePath = path || currentPath;
+//       const updatedVisibility =
+//         visibility !== undefined ? visibility : currentVisibility;
+//       await client.query(updateQuery, [
+//         updatedCdescription,
+//         updatePath,
+//         updateVisibility,
+//         id
+//       ]);
+
+//       return res.status(200).json({ message: 'Successfully Updated!' });
+//     } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ message: 'Internal server error!' });
+//     } finally {
+//       client.release();
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: 'Internal server error!' });
+//   }
+// };
+
+const { validationResult } = require('express-validator');
+
+exports.updateSportsFacility = async (req, res) => {
   try {
-    const { description,id,visibility,path } = req.body;
+    // Validate inputs using express-validator
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { description, id, visibility } = req.body;
+    const image = req.files && req.files.image; // Check if req.files is defined
+
+    // Check if image file is present
+    if (!image) {
+      return res.status(400).json({ message: 'Image file is required!' });
+    }
+
+    const path = image[0].location;
     const checkQuery = 'SELECT * FROM sports_facility WHERE s_id = $1';
     const updateQuery =
-      'UPDATE sports_facility SET s_description=$1,path=$2,visibility=$3 WHERE s_id = $4';
+      'UPDATE sports_facility SET s_description=$1, path=$2, visibility=$3 WHERE s_id = $4';
 
-    client = await pool.connect();
+    const client = await pool.connect();
 
+    try {
+      const checkResult = await client.query(checkQuery, [id]);
 
+      if (checkResult.rowCount === 0) {
+        return res.status(404).json({ message: 'This Project Does Not Exist!' });
+      }
 
-    const checkResult = await client.query(checkQuery, [id]);
-    if (checkResult.rowCount === 0) {
-      return res.status(404).send({ message: 'This Project Does Not Exist!' });
-    }
+      const sportsData = checkResult.rows[0];
+      const {
+        c_description: currentCdescription,
+        path: currentPath,
+        visibility: currentVisibility,
+      } = sportsData;
 
-    const sportsDataData = checkResult.rows[0];
-    const { s_description: currentCdescription, path: currentPath, visibility: currentVisibility  } = sportsData;
+      const updatedCdescription = description || currentCdescription;
 
-    const updatedCdescription = description || currentCdescription;
-    const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility; 
-    const updatePath = path || currentPath;
+      const updatePath = path || currentPath;
+      const updatedVisibility =
+        visibility !== undefined ? visibility : currentVisibility;
+      await client.query(updateQuery, [
+        updatedCdescription,
+        updatePath,
+        updatedVisibility, // Changed from updateVisibility to updatedVisibility
+        id,
+      ]);
 
-    await client.query(updateQuery, [ updatedCdescription,  updatePath,updatedVisibility, id]);
-
-    return res.status(200).send({ message: 'Successfully Updated!' });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send({ message: 'Internal server error!' });
-  } finally {
-    if (client) {
+      return res.status(200).json({ message: 'Successfully Updated!' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error!' });
+    } finally {
       client.release();
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error!' });
   }
 };
 

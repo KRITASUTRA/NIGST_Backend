@@ -103,7 +103,7 @@ router.patch('/update_visibility_campus',updateVisibilityCampus)
 router.post('/create_sports_facility',sportsFacility,createSportsFacility);
 router.get('/view_sports_facility',viewSportsFacility);
 router.get('/view_web_sports_facility',viewWebSportsFacility);
-router.patch('/update_sports_facility',updateSportsFacility);
+router.patch('/update_sports_facility',sportsFacility,updateSportsFacility);
 router.delete('/delete_sports_facility',deleteSportsFacility);
 
 router.post('/create_nigst_hostel',nigstHostell,createNigstHostel);
