@@ -14,7 +14,7 @@ const { CreateCarousel, viewCarouselToAdmin, visibilityedit, viewCarouselToWeb, 
 const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, deleteSocialMedia, viewMediaForWeb } = require('../../controllers/socialMedia')
 const { createSection, viewAboutSection, viewWebAboutSection, deleteAboutSection, updateAboutSection } = require('../../controllers/aboutSection')
 const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus, updateVisibilityCampus } = require('../../controllers/campus')
-const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility } = require('../../controllers/sportsFacility')
+const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility, updateVisibleSportsFacility } = require('../../controllers/sportsFacility')
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel } = require('../../controllers/hostel')
 const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance } = require('../../controllers/boardOfGovernance')
 const { createEvaluation } = require('../../controllers/boardOfEvaluation')
@@ -105,6 +105,7 @@ router.get('/view_sports_facility',viewSportsFacility);
 router.get('/view_web_sports_facility',viewWebSportsFacility);
 router.patch('/update_sports_facility',sportsFacility,updateSportsFacility);
 router.delete('/delete_sports_facility',deleteSportsFacility);
+router.patch('/update_visibility_facility',updateVisibleSportsFacility);
 
 router.post('/create_nigst_hostel',nigstHostell,createNigstHostel);
 router.get('/view_nigst_hostel',viewNigstHostel);

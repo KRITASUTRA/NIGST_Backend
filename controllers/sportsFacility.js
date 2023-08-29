@@ -28,12 +28,19 @@ exports.createSportsFacility=async(req,res)=>{
 
     return res.status(200).send({ message: 'created successfully!' });
   } catch (error) {
-    
+    console.log(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  }
+  finally {
+    if (connection) {
+      await connection.release();
+    }
   }
 }
 //=======================================view data===================================
 
 exports.viewSportsFacility = async (req, res) => {
+  let connection;
   try {
     const allViewFacility = "SELECT s_id as id, s_description as description, path,visibility FROM sports_facility";
     connection = await pool.connect();
@@ -199,19 +206,16 @@ exports.viewWebSportsFacility = async (req, res) => {
 
 
 exports.updateSportsFacility = async (req, res) => {
-  try {
+    try {
 
-    const { description, id, visibility } = req.body;
+    const { description, id } = req.body;
     const image = req.files && req.files.image; // Check if req.files is defined
     
-    // Check if image file is present
-    // if (!image) {
-    //   return res.status(400).json({ message: 'Image file is required!' });
-    // }
+  
     const path = image[0].location;
-    const checkQuery = 'SELECT * FROM sports_facility WHERE s_id = $1';
+         const checkQuery = 'SELECT * FROM sports_facility WHERE s_id = $1';
     const updateQuery =
-      'UPDATE sports_facility SET s_description=$1, path=$2, visibility=$3 WHERE s_id = $4';
+      'UPDATE sports_facility SET s_description=$1, path=$2  WHERE s_id = $3';
 
     const client = await pool.connect();
 
@@ -226,35 +230,80 @@ exports.updateSportsFacility = async (req, res) => {
       const {
         s_description: currentCdescription,
         path: currentPath,
-        visibility: currentVisibility,
-      } = sportsData;
+        
+        } = sportsData;
 
       const updatedCdescription = description || currentCdescription;
       const updatePath = path || currentPath;
-      const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility;
+      
 
       await client.query(updateQuery, [
         updatedCdescription,
         updatePath,
-        updatedVisibility, // Changed from updateVisibility to updatedVisibility
         id
       ]);
       return res.status(200).json({ message: 'Successfully Updated!' });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Internal server error!' });
-    } finally {
-      client.release();
-    }
   } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error!' });
+  } finally {
+    client.release();
+    }
+} catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Internal server error!' });
   }
 };
 
 
-// =============================delete=======================
+exports.updateVisibleSportsFacility = async (req, res) => {
+  try {
 
+  const { visibility, id } = req.body;
+  
+
+  //const path = image[0].location;
+       const checkQuery = 'SELECT * FROM sports_facility WHERE s_id = $1';
+  const updateQuery =
+    'UPDATE sports_facility SET visibility=$1  WHERE s_id = $2';
+
+  const client = await pool.connect();
+
+  try {
+    const checkResult = await client.query(checkQuery, [id]);
+    // console.log(checkResult)
+    if (checkResult.rowCount === 0) {
+      return res.status(404).json({ message: 'This Project Does Not Exist!' });
+    }
+
+    const sportsData = checkResult.rows[0];
+    const {
+      visibility: currentVisibility
+      } = sportsData;
+
+      const updatedVisibility =
+        visibility !== undefined ? visibility : currentVisibility;
+
+    await client.query(updateQuery, [
+      updatedVisibility,
+      id
+    ]);
+    return res.status(200).json({ message: 'Successfully visible Updated!' });
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error!' });
+} finally {
+  client.release();
+  }
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error!' });
+}
+};
+
+
+
+// =============================delete=======================
 exports.deleteSportsFacility = async (req, res) => {
   let connection;
   try {
