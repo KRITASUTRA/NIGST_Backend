@@ -41,7 +41,7 @@ exports.createNigstHostel = async (req, res) => {
 exports.viewNigstHostel = async (req, res) => {
   let connection;
   try {
-    const allHostel = "SELECT h_id as id, h_description as description, path FROM nigst_hostel";
+    const allHostel = "SELECT h_id as id, h_description as description, path,visibility FROM nigst_hostel";
     connection = await pool.connect();
     const alHostel = await connection.query(allHostel);
     if (alHostel.rowCount === 0) {
@@ -50,7 +50,7 @@ exports.viewNigstHostel = async (req, res) => {
     const imageData = [];
 
     for (const row of alHostel.rows) {
-      const { id, description,path } = row;
+      const { id, description,path,visibility } = row;
       const fileUrl = path;
       const key = 'nigst_hostel/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
@@ -69,7 +69,7 @@ exports.viewNigstHostel = async (req, res) => {
         });
         const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
 
-        imageData.push({ id,description,path });
+        imageData.push({ id,description,path,visibility });
       } catch (error) {
         console.error(`Error retrieving file '${key}': ${error}`);
       }
@@ -146,7 +146,10 @@ exports.viewWebNigstHostel = async (req, res) => {
 exports.updateNigstHostel= async (req, res) => {
   let client;
   try {
-    const { description,id,visibility,path } = req.body;
+    const { description,id,visibility } = req.body;
+    const image = req.files && req.files.image; // Check if req.files is defined
+    const path = image[0].location;
+    
     const checkQuery = 'SELECT * FROM nigst_hostel WHERE h_id = $1';
     const updateQuery =
       'UPDATE nigst_hostel SET h_description=$1,path=$2,visibility=$3 WHERE h_id = $4';
