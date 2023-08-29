@@ -206,8 +206,7 @@ exports.updateVisibilityCampus = async (req, res) => {
     // Validate inputs using express-validator
     
 
-    const { id, visibility} = req.body;
-     
+    const {id, visibility} = req.body;
     const checkQuery = 'SELECT * FROM campus WHERE c_id = $1';
     const updateQuery =
       'UPDATE campus SET  visibility=$1 WHERE c_id = $2';
@@ -216,19 +215,19 @@ exports.updateVisibilityCampus = async (req, res) => {
 
     try {
       const checkResult = await client.query(checkQuery, [id]);
-
+  
       if (checkResult.rowCount === 0) {
         return res.status(404).json({ message: 'This Project Does Not Exist!' });
       }
 
       const campusData = checkResult.rows[0];
       const {
-        visibility: currentVisibility,
+        visibility: currentVisibility
       } = campusData;
 
       
       const updatedVisibility =
-        visibility !== undefined ? visibility : currentVisibility;
+        (visibility !== undefined) ? visibility : currentVisibility;
 
       await client.query(updateQuery, [
         updatedVisibility,
