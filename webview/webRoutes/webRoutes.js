@@ -15,7 +15,7 @@ const { createSocialMedia, updateVisiblee, viewSocialMedia, updateSocialMedia, d
 const { createSection, viewAboutSection, viewWebAboutSection, deleteAboutSection, updateAboutSection } = require('../../controllers/aboutSection')
 const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus, updateVisibilityCampus } = require('../../controllers/campus')
 const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility, updateVisibleSportsFacility } = require('../../controllers/sportsFacility')
-const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel } = require('../../controllers/hostel')
+const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel, updateVisibleHostel } = require('../../controllers/hostel')
 const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance } = require('../../controllers/boardOfGovernance')
 const { createEvaluation } = require('../../controllers/boardOfEvaluation')
 
@@ -112,6 +112,7 @@ router.get('/view_nigst_hostel',viewNigstHostel);
 router.get('/view_web_nigst_hostel',viewWebNigstHostel);
 router.patch('/update_nigst_hostel',nigstHostell,updateNigstHostel);
 router.delete('/delete_nigst_hostel',deleteNigstHostel);
+router.patch('/update_visibility_hostel',updateVisibleHostel)
 
 router.post('/create_governance',boardGovernancee,createGovernance)
 router.get('/view_governance',viewGovernance)

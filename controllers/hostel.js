@@ -183,7 +183,52 @@ exports.updateNigstHostel= async (req, res) => {
   }
 };
 
+//============================update visibility=====================================================
 
+exports.updateVisibleHostel = async (req, res) => {
+  try {
+
+  const { visibility, id } = req.body;
+  
+
+  //const path = image[0].location;
+       const checkQuery = 'SELECT * FROM nigst_hostel WHERE h_id = $1';
+  const updateQuery =
+    'UPDATE nigst_hostel SET visibility=$1  WHERE h_id = $2';
+
+  const client = await pool.connect();
+
+  try {
+    const checkResult = await client.query(checkQuery, [id]);
+    // console.log(checkResult)
+    if (checkResult.rowCount === 0) {
+      return res.status(404).json({ message: 'This Project Does Not Exist!' });
+    }
+
+    const sportsData = checkResult.rows[0];
+    const {
+      visibility: currentVisibility
+      } = sportsData;
+
+      const updatedVisibility =
+        visibility !== undefined ? visibility : currentVisibility;
+
+    await client.query(updateQuery, [
+      updatedVisibility,
+      id
+    ]);
+    return res.status(200).json({ message: 'Successfully visible Updated!' });
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error!' });
+} finally {
+  client.release();
+  }
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error!' });
+}
+};
 // =============================delete=======================
 
 exports.deleteNigstHostel = async (req, res) => {
