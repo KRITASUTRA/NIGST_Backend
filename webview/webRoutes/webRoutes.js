@@ -16,7 +16,7 @@ const { createSection, viewAboutSection, viewWebAboutSection, deleteAboutSection
 const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus, updateVisibilityCampus } = require('../../controllers/campus')
 const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility, updateVisibleSportsFacility } = require('../../controllers/sportsFacility')
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel, updateVisibleHostel } = require('../../controllers/hostel')
-const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance } = require('../../controllers/boardOfGovernance')
+const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance, updateVisibleGovernance } = require('../../controllers/boardOfGovernance')
 const { createEvaluation } = require('../../controllers/boardOfEvaluation')
 
 const router = express.Router()
@@ -119,6 +119,7 @@ router.get('/view_governance',viewGovernance)
 router.get('/view_web_governance',viewWebGovernance)
 router.patch('/update_governance',updateGovernance)
 router.delete('/delete_governance',deleteGovernance)
+router.patch('/update_visible_governance',updateVisibleGovernance)
 
 router.post('/create_board_of_evaluation',boardOfEvaluation,createEvaluation)
 module.exports = router

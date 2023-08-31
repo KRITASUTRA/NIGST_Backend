@@ -7,7 +7,7 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 exports.createGovernance = async (req, res) => {
   let connection;
   try {
-    const { name,description,position } = req.body;
+    const { name,designation,position } = req.body;
     const image = req.files.image;
     const path = image[0].location;
 
@@ -22,7 +22,7 @@ exports.createGovernance = async (req, res) => {
       result = await connection.query(check, [GID]);
     }
     const insertQuery = 'INSERT INTO  board_of_governance (g_id, g_name,g_designation, g_position, path) VALUES ($1, $2, $3, $4, $5)';
-    const data = [GID,name,description,position,path];
+    const data = [GID,name,designation,position,path];
     const result1 = await connection.query(insertQuery, data);
 
     return res.status(200).send({ message: 'created successfully!' });
@@ -41,7 +41,7 @@ exports.createGovernance = async (req, res) => {
 exports.viewGovernance = async (req, res) => {
   let connection;
   try {
-    const allGovernance = "SELECT g_id as id, g_name as name, g_description as description, path FROM board_of_governance";
+    const allGovernance = "SELECT g_id as id, g_name as name, g_designation as designation, path,visibility FROM board_of_governance";
     connection = await pool.connect();
     const alGovern = await connection.query(allGovernance);
     if (alGovern.rowCount === 0) {
@@ -50,9 +50,9 @@ exports.viewGovernance = async (req, res) => {
     const imageData = [];
 
     for (const row of alGovern.rows) {
-      const { id, name, description,position, path } = row;
+      const { id, name, designation,position, path,visibility } = row;
       const fileUrl = path;
-      const key = '/governance' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+      const key = 'governance/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
       try {
         const s3Client = new S3Client({
@@ -69,7 +69,7 @@ exports.viewGovernance = async (req, res) => {
         });
         const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
 
-        imageData.push({ id, name, description,position, path });
+        imageData.push({ id, name, designation,position, path,visibility });
       } catch (error) {
         console.error(`Error retrieving file '${key}': ${error}`);
       }
@@ -93,7 +93,7 @@ exports.viewGovernance = async (req, res) => {
 exports.viewWebGovernance = async (req, res) => {
     let connection;
     try {
-      const allGovernance = "SELECT g_id as id, g_name as name, g_description as description, path FROM board_of_governance WHERE visibility=true";
+      const allGovernance = "SELECT g_id as id, g_name as name, g_designation as designation, path FROM board_of_governance WHERE visibility=true";
       connection = await pool.connect();
       const alGovern = await connection.query(allGovernance);
       if (alGovern.rowCount === 0) {
@@ -102,9 +102,9 @@ exports.viewWebGovernance = async (req, res) => {
       const imageData = [];
   
       for (const row of alGovern.rows) {
-        const { id, name, description,position, path } = row;
+        const { id, name, designation,position, path } = row;
         const fileUrl = path;
-        const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+        const key = 'governance/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
   
         try {
           const s3Client = new S3Client({
@@ -121,7 +121,7 @@ exports.viewWebGovernance = async (req, res) => {
           });
           const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
   
-          imageData.push({ id, name, description,position, path });
+          imageData.push({ id, name, designation,position, path });
         } catch (error) {
           console.error(`Error retrieving file '${key}': ${error}`);
         }
@@ -146,10 +146,12 @@ exports.viewWebGovernance = async (req, res) => {
 exports.updateGovernance= async (req, res) => {
   let client;
   try {
-    const { description,name,id,visibility,path } = req.body;
+    const { designation,name,id} = req.body;
+    const image = req.files && req.files.image; // Check if req.files is defined
+    const path = image[0].location;
     const checkQuery = 'SELECT * FROM board_of_governance WHERE g_id = $1';
     const updateQuery =
-      'UPDATE board_of_governance SET g_name=$1, g_description=$2,g_position=$3, path=$4,visibility=$5 WHERE g_id = $6';
+      'UPDATE board_of_governance SET g_name=$1, g_designation=$2,g_position=$3, path=$4  WHERE g_id = $5';
 
     client = await pool.connect();
 
@@ -161,14 +163,13 @@ exports.updateGovernance= async (req, res) => {
     }
 
     const governanceData = checkResult.rows[0];
-    const { g_name:currentName,g_description: currentCdescription,g_position:currentPosition,  path: currentPath, visibility: currentVisibility  } = governanceData;
+    const { g_name:currentName,g_designation: currentCdesignation,g_position:currentPosition,  path: currentPath  } = governanceData;
 
     const updateName=name || currentName;
-    const updatedCdescription = description || currentCdescription;
-    const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility; 
+    const updatedCdesignation = designation || currentCdesignation;
     const updatePath = path || currentPath;
 
-    await client.query(updateQuery, [ updateName, updatedCdescription,  updatePath,updatedVisibility, id]);
+    await client.query(updateQuery, [ updateName, updatedCdesignation,  updatePath,updatedVisibility, id]);
 
     return res.status(200).send({ message: 'Successfully Updated!' });
   } catch (error) {
@@ -179,6 +180,52 @@ exports.updateGovernance= async (req, res) => {
       client.release();
     }
   }
+};
+
+
+// ==============================================update visibility========================================================
+exports.updateVisibleGovernance = async (req, res) => {
+  try {
+
+  const { visibility, id } = req.body;
+  
+
+       const checkQuery = 'SELECT * FROM board_of_governance WHERE g_id = $1';
+  const updateQuery =
+    'UPDATE board_of_governance SET visibility=$1  WHERE g_id = $2';
+
+  const client = await pool.connect();
+
+  try {
+    const checkResult = await client.query(checkQuery, [id]);
+    // console.log(checkResult)
+    if (checkResult.rowCount === 0) {
+      return res.status(404).json({ message: 'This Project Does Not Exist!' });
+    }
+
+    const governanceData = checkResult.rows[0];
+    const {
+      visibility: currentVisibility
+      } = governanceData;
+
+      const updatedVisibility =
+        (visibility !== undefined) ? visibility : currentVisibility;
+
+    await client.query(updateQuery, [
+      updatedVisibility,
+      id
+    ]);
+    return res.status(200).json({ message: 'Successfully visible Updated!' });
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error!' });
+} finally {
+  client.release();
+  }
+} catch (error) {
+  console.error(error);
+  return res.status(500).json({ message: 'Internal server error!' });
+}
 };
 
 
