@@ -146,13 +146,13 @@ exports.viewWebNigstHostel = async (req, res) => {
 exports.updateNigstHostel= async (req, res) => {
   let client;
   try {
-    const { description,id,visibility } = req.body;
+    const { description,id } = req.body;
     const image = req.files && req.files.image; // Check if req.files is defined
     const path = image[0].location;
     
     const checkQuery = 'SELECT * FROM nigst_hostel WHERE h_id = $1';
     const updateQuery =
-      'UPDATE nigst_hostel SET h_description=$1,path=$2,visibility=$3 WHERE h_id = $4';
+      'UPDATE nigst_hostel SET h_description=$1,path=$2 WHERE h_id = $3';
 
     client = await pool.connect();
 
@@ -164,13 +164,12 @@ exports.updateNigstHostel= async (req, res) => {
     }
 
     const HostelData = checkResult.rows[0];
-    const { h_description: currentCdescription, path: currentPath, visibility: currentVisibility  } = HostelData;
+    const { h_description: currentCdescription, path: currentPath  } = HostelData;
 
-    const updatedCdescription = description || currentCdescription;
-    const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility; 
+    const updatedCdescription = description || currentCdescription; 
     const updatePath = path || currentPath;
 
-    await client.query(updateQuery, [ updatedCdescription,  updatePath,updatedVisibility, id]);
+    await client.query(updateQuery, [ updatedCdescription,  updatePath, id]);
 
     return res.status(200).send({ message: 'Successfully Updated!' });
   } catch (error) {

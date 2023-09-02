@@ -117,7 +117,7 @@ router.patch('/update_visibility_hostel',updateVisibleHostel)
 router.post('/create_governance',boardGovernancee,createGovernance)
 router.get('/view_governance',viewGovernance)
 router.get('/view_web_governance',viewWebGovernance)
-router.patch('/update_governance',updateGovernance)
+router.patch('/update_governance',boardGovernancee,updateGovernance)
 router.delete('/delete_governance',deleteGovernance)
 router.patch('/update_visible_governance',updateVisibleGovernance)
 

@@ -146,9 +146,10 @@ exports.viewWebGovernance = async (req, res) => {
 exports.updateGovernance= async (req, res) => {
   let client;
   try {
-    const { designation,name,id} = req.body;
-    const image = req.files && req.files.image; // Check if req.files is defined
-    const path = image[0].location;
+    const {designation,position,name,id} =req.body;
+    // console.log(req.body)
+    const image=req.files.image;
+    const path=image[0].location;
     const checkQuery = 'SELECT * FROM board_of_governance WHERE g_id = $1';
     const updateQuery =
       'UPDATE board_of_governance SET g_name=$1, g_designation=$2,g_position=$3, path=$4  WHERE g_id = $5';
@@ -168,8 +169,8 @@ exports.updateGovernance= async (req, res) => {
     const updateName=name || currentName;
     const updatedCdesignation = designation || currentCdesignation;
     const updatePath = path || currentPath;
-
-    await client.query(updateQuery, [ updateName, updatedCdesignation,  updatePath,updatedVisibility, id]);
+    const updatePosition=position || currentPosition;
+    await client.query(updateQuery, [ updateName, updatedCdesignation,  updatePath,updatePosition, id]);
 
     return res.status(200).send({ message: 'Successfully Updated!' });
   } catch (error) {
