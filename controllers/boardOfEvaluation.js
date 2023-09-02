@@ -41,49 +41,49 @@ finally{
 }
 };
 
-exports.viewEvaluation=async(req,res)=>{
-    let connection;
-    try{
-    const allEvaluation='SELECT g_id as id,g_name as name, g_designation as designation,path from board_of_evaluation';
-    connection=await pool.connect();
-    const alEvaluation=await connection.query(allEvaluation)
-    if(alEvaluation.rowCount===0){
-        return res.status(404).send({message:'No image found!'});
-
+//===========================================view=============================================
+exports.viewEvaluation = async (req, res) => {
+  let connection;
+  try {
+    const allEvaluation = "SELECT g_id as id, g_name as name, g_designation as designation, path,visibility FROM board_of_evaluation";
+    connection = await pool.connect();
+    const alEvaluate = await connection.query(allEvaluation);
+    if (alEvaluate.rowCount === 0) {
+      return res.status(404).send({ message: 'No image Found' });
     }
-    const imageData=[];
+    const imageData = [];
 
-    for(const row of alEvaluation.rows){
-        const{id,name,designation,position,path}=row;
-        const fileUrl=path;
-        const key='/evaluation' + fileUrl.substring(fileUrl.lastIndexOf('/')+1);
-        try {
-            const s3Client=new S3Client({
-                resign:process.env.BUCKET_REGION,
-                credentials:{
-                    accessKeyId: process.env.ACCESS_KEY,
-                    secretAccessKey: process.env.SECRET_ACCESS_KEY,
-                }
-            });
-            const command = new GetObjectCommand({
-                Bucket: process.env.BUCKET_NAME,
-                Key: key,
-              });
-              const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-      
-              imageData.push({ id, name, description,position, path });
-        } catch (error) {
-            console.error(`Error retrieving file '${key}': ${error}`);
-        } 
+    for (const row of alEvaluate.rows) {
+      const { id, name, designation,position, path,visibility } = row;
+      const fileUrl = path;
+      const key = 'evaluation/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+
+      try {
+        const s3Client = new S3Client({
+          region: process.env.BUCKET_REGION,
+          credentials: {
+            accessKeyId: process.env.ACCESS_KEY,
+            secretAccessKey: process.env.SECRET_ACCESS_KEY,
+          },
+        });
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: key,
+        });
+        const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+
+        imageData.push({ id, name, designation,position, path,visibility });
+      } catch (error) {
+        console.error(`Error retrieving file '${key}': ${error}`);
+      }
     }
     if (imageData.length === 0) {
-        return res.status(404).send({ error: 'Image not found.' });
-      }
-  
-      return res.send({ data: imageData });
+      return res.status(404).send({ error: 'Image not found.' });
+    }
 
-
-}catch (error) {
+    return res.send({ data: imageData });
+  } catch (error) {
     console.log(error);
     return res.status(500).send({ message: 'Internal server error!' });
   } finally {
@@ -95,64 +95,64 @@ exports.viewEvaluation=async(req,res)=>{
 
 // =======================================view for web==========================================
 exports.viewWebEvaluation = async (req, res) => {
-    let connection;
-    try {
-      const allEvaluation = "SELECT g_id as id, g_name as name, g_description as description, path FROM board_of_evaluation WHERE visibility=true";
-      connection = await pool.connect();
-      const alEvaluation = await connection.query(allEvaluation);
-      if (alEvaluation.rowCount === 0) {
-        return res.status(404).send({ message: 'No image Found' });
-      }
-      const imageData = [];
-  
-      for (const row of alEvaluation.rows) {
-        const { id, name, description,position, path } = row;
-        const fileUrl = path;
-        const key = 'Facility/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
-  
-        try {
-          const s3Client = new S3Client({
-            region: process.env.BUCKET_REGION,
-            credentials: {
-              accessKeyId: process.env.ACCESS_KEY,
-              secretAccessKey: process.env.SECRET_ACCESS_KEY,
-            },
-          });
-  
-          const command = new GetObjectCommand({
-            Bucket: process.env.BUCKET_NAME,
-            Key: key,
-          });
-          const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
-  
-          imageData.push({ id, name, description,position, path });
-        } catch (error) {
-          console.error(`Error retrieving file '${key}': ${error}`);
-        }
-      }
-      if (imageData.length === 0) {
-        return res.status(404).send({ error: 'Image not found.' });
-      }
-  
-      return res.send({ data: imageData });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send({ message: 'Internal server error!' });
-    } finally {
-      if (connection) {
-        await connection.release();
+  let connection;
+  try {
+    const allEvaluation = "SELECT g_id as id, g_name as name, g_designation as designation, path FROM board_of_evaluation WHERE visibility=true";
+    connection = await pool.connect();
+    const alEvaluate = await connection.query(allEvaluation);
+    if (alEvaluate.rowCount === 0) {
+      return res.status(404).send({ message: 'No image Found' });
+    }
+    const imageData = [];
+
+    for (const row of alEvaluate.rows) {
+      const { id, name, designation,position, path,visibility } = row;
+      const fileUrl = path;
+      const key = 'evaluation/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+
+      try {
+        const s3Client = new S3Client({
+          region: process.env.BUCKET_REGION,
+          credentials: {
+            accessKeyId: process.env.ACCESS_KEY,
+            secretAccessKey: process.env.SECRET_ACCESS_KEY,
+          },
+        });
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: key,
+        });
+        const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+
+        imageData.push({ id, name, designation,position, path,visibility });
+      } catch (error) {
+        console.error(`Error retrieving file '${key}': ${error}`);
       }
     }
-  };
+    if (imageData.length === 0) {
+      return res.status(404).send({ error: 'Image not found.' });
+    }
+
+    return res.send({ data: imageData });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
 
   //======================================UPDATE=========================================
 exports.updateEvaluation= async (req, res) => {
     let client;
     try {
-      const { description,name,id,visibility,path } = req.body;
+      const { designation,name,id,path,position } = req.body;
       const checkQuery = 'SELECT * FROM board_of_evaluation WHERE g_id = $1';
       const updateQuery =
-        'UPDATE board_of_evaluation SET g_name=$1, g_description=$2,g_position=$3, path=$4,visibility=$5 WHERE g_id = $6';
+        'UPDATE board_of_evaluation SET g_name=$1, g_designation=$2,g_position=$3, path=$4  WHERE g_id = $5';
   
       client = await pool.connect();
   
@@ -164,14 +164,14 @@ exports.updateEvaluation= async (req, res) => {
       }
   
       const evaluationData = checkResult.rows[0];
-      const { g_name:currentName,g_description: currentCdescription,g_position:currentPosition,  path: currentPath, visibility: currentVisibility  } =evaluationData;
+      const { g_name:currentName,g_designation: currentCdesignation,g_position:currentPosition,  path: currentPath } =evaluationData;
   
       const updateName=name || currentName;
-      const updatedCdescription = description || currentCdescription;
-      const updatedVisibility = (visibility !== undefined) ? visibility : currentVisibility; 
+      const updatedCdesignation = designation || currentCdesignation;
+      const updatePosition=position || currentPosition;
       const updatePath = path || currentPath;
   
-      await client.query(updateQuery, [ updateName, updatedCdescription,  updatePath,updatedVisibility, id]);
+      await client.query(updateQuery, [ updateName, updatedCdesignation,  updatePosition, updatePath, id]);
   
       return res.status(200).send({ message: 'Successfully Updated!' });
     } catch (error) {
@@ -182,6 +182,51 @@ exports.updateEvaluation= async (req, res) => {
         client.release();
       }
     }
+  };
+
+  // ============================================update visibility==========================================
+  exports.updateVisibleEvaluation = async (req, res) => {
+    try {
+  
+    const { visibility, id } = req.body;
+    
+  
+         const checkQuery = 'SELECT * FROM board_of_evaluation WHERE g_id = $1';
+    const updateQuery =
+      'UPDATE board_of_evaluation SET visibility=$1  WHERE g_id = $2';
+  
+    const client = await pool.connect();
+  
+    try {
+      const checkResult = await client.query(checkQuery, [id]);
+      // console.log(checkResult)
+      if (checkResult.rowCount === 0) {
+        return res.status(404).json({ message: 'This Project Does Not Exist!' });
+      }
+  
+      const evaluationData = checkResult.rows[0];
+      const {
+        visibility: currentVisibility
+        } = evaluationData;
+  
+        const updatedVisibility =
+          (visibility !== undefined) ? visibility : currentVisibility;
+  
+      await client.query(updateQuery, [
+        updatedVisibility,
+        id
+      ]);
+      return res.status(200).json({ message: 'Successfully visible Updated!' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error!' });
+  } finally {
+    client.release();
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error!' });
+  }
   };
 
 // =============================delete=======================

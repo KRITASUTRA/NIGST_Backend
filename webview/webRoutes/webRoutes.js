@@ -17,7 +17,7 @@ const { createCampus, viewCampus, updateCampus, deleteCampus, viewWebCampus, upd
 const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateSportsFacility, deleteSportsFacility, updateVisibleSportsFacility } = require('../../controllers/sportsFacility')
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel, updateVisibleHostel } = require('../../controllers/hostel')
 const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance, updateVisibleGovernance } = require('../../controllers/boardOfGovernance')
-const { createEvaluation } = require('../../controllers/boardOfEvaluation')
+const { createEvaluation, viewEvaluation, viewWebEvaluation, updateEvaluation, updateVisibleEvaluation, deleteEvaluation } = require('../../controllers/boardOfEvaluation')
 
 const router = express.Router()
 
@@ -122,5 +122,10 @@ router.delete('/delete_governance',deleteGovernance)
 router.patch('/update_visible_governance',updateVisibleGovernance)
 
 router.post('/create_board_of_evaluation',boardOfEvaluation,createEvaluation)
+router.get('/view_evaluation',viewEvaluation)
+router.get('/view_web_evaluation',viewWebEvaluation)
+router.patch('/update_evaluation',boardOfEvaluation,updateEvaluation)
+router.patch('/update_visible_evaluation',updateVisibleEvaluation)
+router.delete('/delete_evaluation',deleteEvaluation)
 module.exports = router
 
