@@ -149,7 +149,9 @@ exports.viewWebEvaluation = async (req, res) => {
 exports.updateEvaluation= async (req, res) => {
     let client;
     try {
-      const { designation,name,id,path,position } = req.body;
+      const { designation,name,id,position } = req.body;
+      const image=req.files.image;
+    const path=image[0].location;
       const checkQuery = 'SELECT * FROM board_of_evaluation WHERE g_id = $1';
       const updateQuery =
         'UPDATE board_of_evaluation SET g_name=$1, g_designation=$2,g_position=$3, path=$4  WHERE g_id = $5';
