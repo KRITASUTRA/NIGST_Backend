@@ -121,7 +121,7 @@ router.patch('/update_governance',boardGovernancee,updateGovernance)
 router.delete('/delete_governance',deleteGovernance)
 router.patch('/update_visible_governance',updateVisibleGovernance)
 
-router.post('/create_board_of_evaluation',boardOfEvaluation,createEvaluation)
+router.post('/create_evaluation',boardOfEvaluation,createEvaluation)
 router.get('/view_evaluation',viewEvaluation)
 router.get('/view_web_evaluation',viewWebEvaluation)
 router.patch('/update_evaluation',boardOfEvaluation,updateEvaluation)

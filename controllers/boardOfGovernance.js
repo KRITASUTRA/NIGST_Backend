@@ -8,7 +8,7 @@ exports.createGovernance = async (req, res) => {
   let connection;
   try {
     const { name,designation,position } = req.body;
-    const image = req.files.image;
+        const image = req.files.image;
     const path = image[0].location;
 
     connection = await pool.connect();
