@@ -237,5 +237,6 @@ const sportsFacility=createUploadMiddleware('sports_facility')
 const boardGovernancee=createUploadMiddleware('governance')
 const nigstHostell=createUploadMiddleware('nigst_hostel')
 const boardOfEvaluation=createUploadMiddleware('evaluation')
+const boardOfStudies=createUploadMiddleware('studies')
 
-module.exports = { uploadFacultyPhoto, uploadStudentPhoto,uploadAnnouncement,galleryUpload,videoUpload,pdfUpload,tenderpdf,corrigendum,reportSubmit,bannerUpload,SOI_PROJECT_UPLOAD,headerUpload,homeCarousel, campus_upload,aboutSection,sportsFacility,boardGovernancee,nigstHostell,boardOfEvaluation};
+module.exports = { uploadFacultyPhoto, uploadStudentPhoto,uploadAnnouncement,galleryUpload,videoUpload,pdfUpload,tenderpdf,corrigendum,reportSubmit,bannerUpload,SOI_PROJECT_UPLOAD,headerUpload,homeCarousel, campus_upload,aboutSection,sportsFacility,boardGovernancee,nigstHostell,boardOfEvaluation,boardOfStudies};

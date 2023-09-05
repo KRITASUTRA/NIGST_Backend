@@ -674,6 +674,8 @@ await client.query(`
   )`
 )
 
+
+
   console.log('Tables created successfully')
   }
 

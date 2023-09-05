@@ -2,7 +2,7 @@ const express = require('express')
 const { viewAllDetailsFaculty } = require('../../viewList/allview')
 const { viewWebAnnouncement, viewAllWebAnnouncement, viewPDFAnnouncement, viewAllPDFs, viewArchiveToWebsite, viewArchivePDFAnnouncement } = require('../announcement')
 const { createBanner, getBanner } = require('../Banner')
-const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee, boardOfEvaluation } = require('../../middleware/faculty')
+const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee, boardOfEvaluation, boardOfStudies } = require('../../middleware/faculty')
 
 const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter, viewFooterWebsite } = require('../footer')
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
@@ -18,6 +18,12 @@ const { createSportsFacility, viewSportsFacility, viewWebSportsFacility, updateS
 const { createNigstHostel, viewNigstHostel, viewWebNigstHostel, updateNigstHostel, deleteNigstHostel, updateVisibleHostel } = require('../../controllers/hostel')
 const { createGovernance, viewGovernance, viewWebGovernance, updateGovernance, deleteGovernance, updateVisibleGovernance } = require('../../controllers/boardOfGovernance')
 const { createEvaluation, viewEvaluation, viewWebEvaluation, updateEvaluation, updateVisibleEvaluation, deleteEvaluation } = require('../../controllers/boardOfEvaluation')
+const { createStudies } = require('../../controllers/boardOfStudies')
+const { viewStudies } = require('../../controllers/boardOfStudies')
+const { viewWebStudies } = require('../../controllers/boardOfStudies')
+const { updateStudies } = require('../../controllers/boardOfStudies')
+const { updateVisibleStudies } = require('../../controllers/boardOfStudies')
+const { deleteStudies } = require('../../controllers/boardOfStudies')
 
 const router = express.Router()
 
@@ -127,5 +133,13 @@ router.get('/view_web_evaluation',viewWebEvaluation)
 router.patch('/update_evaluation',boardOfEvaluation,updateEvaluation)
 router.patch('/update_visible_evaluation',updateVisibleEvaluation)
 router.delete('/delete_evaluation',deleteEvaluation)
+
+
+router.post('/create_studies',boardOfStudies,createStudies)
+router.get('/view_studies',viewStudies)
+router.get('/view_web_studies',viewWebStudies)
+router.patch('/update_studies',boardOfStudies,updateStudies)
+router.patch('/update_visible_studies',updateVisibleStudies)
+router.delete('/delete_studies',deleteStudies)
 module.exports = router
 
