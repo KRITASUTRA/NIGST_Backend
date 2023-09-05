@@ -160,12 +160,12 @@ exports.updateEvaluation= async (req, res) => {
   
   
   
-      const checkResult = await client.query(checkQuery, [id]);
-      if (checkResult.rowCount === 0) {
+      const checkResult1 = await client.query(checkQuery, [id]);
+      if (checkResult1.rowCount === 0) {
         return res.status(404).send({ message: 'This Project Does Not Exist!' });
       }
   
-      const evaluationData = checkResult.rows[0];
+      const evaluationData = checkResult1.rows[0];
       const { g_name:currentName,g_designation: currentCdesignation,g_position:currentPosition,  path: currentPath } =evaluationData;
   
       const updateName=name || currentName;
