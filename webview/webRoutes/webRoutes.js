@@ -24,7 +24,7 @@ const { viewWebStudies } = require('../../controllers/boardOfStudies')
 const { updateStudies } = require('../../controllers/boardOfStudies')
 const { updateVisibleStudies } = require('../../controllers/boardOfStudies')
 const { deleteStudies } = require('../../controllers/boardOfStudies')
-const { createAboutImage, viewImages } = require('../../controllers/aboutSectionImage')
+const { createAboutImage, viewImages, viewWebImages } = require('../../controllers/aboutSectionImage')
 
 const router = express.Router()
 
@@ -145,5 +145,6 @@ router.delete('/delete_studies',deleteStudies)
 
 router.post('/create_about_section_image',aboutSectionImage,createAboutImage)
 router.get('/view_images',viewImages)
+router.get('/view_web_images',viewWebImages)
 module.exports = router
 
