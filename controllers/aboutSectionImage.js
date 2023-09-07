@@ -52,24 +52,58 @@ exports.createAboutImage = async (req, res) => {
 
 exports.viewImages=async(req,res)=>
 {
+    let connection;
     try{
         let limit=3;
-    const allView='SELECT * from about_section_image limit=$1';
+    const allView='SELECT a_id as id,path from about_section_image limit $1';
     const connection=await pool.connect();
-    const allImage=await connection.query(allView,[limit]);
+    const allImage= await connection.query(allView,[limit]);
     if (allImage.rowCount === 0) {
-        await connection.release();
         return res.status(404).send({ message: 'No image Found' });
       }
 
-    const images = imagesResult.rows; // Assuming each row contains image data
+    
+   
+const imageData = [];
 
-    await connection.release();
+    for (const row of allImage.rows) {
+      const { id, path } = row;
+      const fileUrl = path;
+      const key = 'aboutImage/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
-    res.status(200).json(images); // Send the first three images as a JSON response
-} catch (error) {
-    console.error(error);
-    return res.status(500).send({ error: 'Internal server error' });
-}
-}
+      try {
+        const s3Client = new S3Client({
+          region: process.env.BUCKET_REGION,
+          credentials: {
+            accessKeyId: process.env.ACCESS_KEY,
+            secretAccessKey: process.env.SECRET_ACCESS_KEY,
+          },
+        });
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: key,
+        });
+        const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
+
+        imageData.push({ id, path });
+      } catch (error) {
+        console.error(`Error retrieving file '${key}': ${error}`);
+      }
+    }
+    if (imageData.length === 0) {
+      return res.status(404).send({ error: 'Image not found.' });
+    }
+
+    return res.send({ data: imageData });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
 
