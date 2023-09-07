@@ -146,45 +146,53 @@ exports.viewWebEvaluation = async (req, res) => {
 };
 
   //======================================UPDATE=========================================
-exports.updateEvaluation= async (req, res) => {
-    let client;
-    try {
-      const { designation,name,id,position } = req.body;
-      const image=req.files.image;
-    const path=image[0].location;
-      const checkQuery = 'SELECT * FROM board_of_evaluation WHERE g_id = $1';
-      const updateQuery =
-        'UPDATE board_of_evaluation SET g_name=$1, g_designation=$2,g_position=$3, path=$4  WHERE g_id = $5';
-  
-      client = await pool.connect();
-  
-  
-  
-      const checkResult1 = await client.query(checkQuery, [id]);
-      if (checkResult1.rowCount === 0) {
-        return res.status(404).send({ message: 'This Project Does Not Exist!' });
-      }
-  
-      const evaluationData = checkResult1.rows[0];
-      const { g_name:currentName,g_designation: currentCdesignation,g_position:currentPosition,  path: currentPath } =evaluationData;
-  
-      const updateName=name || currentName;
-      const updatedCdesignation = designation || currentCdesignation;
-      const updatePosition=position || currentPosition;
-      const updatePath = path || currentPath;
-  
-      await client.query(updateQuery, [ updateName, updatedCdesignation,  updatePosition, updatePath, id]);
-  
-      return res.status(200).send({ message: 'Successfully Updated!' });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).send({ message: 'Internal server error!' });
-    } finally {
-      if (client) {
-        client.release();
-      }
+
+exports.updateEvaluation = async (req, res) => {
+  let client;
+  try {
+    const { designation, name, id, position } = req.body;
+    const image = req.files.image;
+    let updatePath; // Initialize the path variable
+
+    if (image && image.length > 0) {
+      // Check if a new image is provided
+      updatePath = image[0].location;
     }
-  };
+
+    const checkQuery = 'SELECT * FROM board_of_evaluation WHERE g_id = $1';
+    const updateQuery =
+      'UPDATE board_of_evaluation SET g_name=$1, g_designation=$2, g_position=$3, path=$4  WHERE g_id = $5';
+
+    client = await pool.connect();
+
+    const checkResult1 = await client.query(checkQuery, [id]);
+    if (checkResult1.rowCount === 0) {
+      return res.status(404).send({ message: 'This Project Does Not Exist!' });
+    }
+
+    const evaluationData = checkResult1.rows[0];
+    const { g_name: currentName, g_designation: currentCdesignation, g_position: currentPosition, path: currentPath } = evaluationData;
+
+    const updateName = name || currentName;
+    const updatedCdesignation = designation || currentCdesignation;
+    const updatePosition = position || currentPosition;
+
+    // Use the new path if provided, otherwise use the current path
+    const finalUpdatePath = updatePath || currentPath;
+
+    await client.query(updateQuery, [updateName, updatedCdesignation, updatePosition, finalUpdatePath, id]);
+
+    return res.status(200).send({ message: 'Successfully Updated!' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+};
+
 
   // ============================================update visibility==========================================
   exports.updateVisibleEvaluation = async (req, res) => {
