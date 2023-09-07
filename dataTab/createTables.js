@@ -674,6 +674,14 @@ await client.query(`
   )`
 )
 
+await client.query(`
+CREATE TABLE IF NOT EXISTS about_section_image (
+  id SERIAL PRIMARY KEY,
+  a_id varchar(255) NOT NULL UNIQUE,
+  path varchar(255),
+  created_at TIMESTAMP DEFAULT NOW()
+  )`)
+
 
 
   console.log('Tables created successfully')

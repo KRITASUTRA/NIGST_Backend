@@ -2,7 +2,7 @@ const express = require('express')
 const { viewAllDetailsFaculty } = require('../../viewList/allview')
 const { viewWebAnnouncement, viewAllWebAnnouncement, viewPDFAnnouncement, viewAllPDFs, viewArchiveToWebsite, viewArchivePDFAnnouncement } = require('../announcement')
 const { createBanner, getBanner } = require('../Banner')
-const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee, boardOfEvaluation, boardOfStudies } = require('../../middleware/faculty')
+const { bannerUpload, galleryUpload, SOI_PROJECT_UPLOAD, headerUpload, homeCarousel, campus_upload, aboutSection, sportsFacility, nigstHostel, nigstHostell, boardGovernancee, boardOfEvaluation, boardOfStudies, aboutSectionImage } = require('../../middleware/faculty')
 
 const { FooterCreate, viewFooter, updateFooter, deleteFooter, updateVisible, contactUSFooter, viewFooterWebsite } = require('../footer')
 const { createAlbumCategory, viewAlbumCategory, updateAlbumCategory, deleteAlbumCategory } = require('../../controllers/GalleryCategory')
@@ -24,6 +24,7 @@ const { viewWebStudies } = require('../../controllers/boardOfStudies')
 const { updateStudies } = require('../../controllers/boardOfStudies')
 const { updateVisibleStudies } = require('../../controllers/boardOfStudies')
 const { deleteStudies } = require('../../controllers/boardOfStudies')
+const { createAboutImage, viewImages } = require('../../controllers/aboutSectionImage')
 
 const router = express.Router()
 
@@ -141,5 +142,8 @@ router.get('/view_web_studies',viewWebStudies)
 router.patch('/update_studies',boardOfStudies,updateStudies)
 router.patch('/update_visible_studies',updateVisibleStudies)
 router.delete('/delete_studies',deleteStudies)
+
+router.post('/create_about_section_image',aboutSectionImage,createAboutImage)
+router.get('/view_images',viewImages)
 module.exports = router
 

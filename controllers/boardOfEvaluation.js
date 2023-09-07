@@ -45,7 +45,7 @@ finally{
 exports.viewEvaluation = async (req, res) => {
   let connection;
   try {
-    const allEvaluation = "SELECT g_id as id, g_name as name, g_designation as designation, path,visibility FROM board_of_evaluation";
+    const allEvaluation = "SELECT g_id as id, g_name as name, g_designation as designation,g_position as position ,path,visibility FROM board_of_evaluation";
     connection = await pool.connect();
     const alEvaluate = await connection.query(allEvaluation);
     if (alEvaluate.rowCount === 0) {
@@ -97,7 +97,7 @@ exports.viewEvaluation = async (req, res) => {
 exports.viewWebEvaluation = async (req, res) => {
   let connection;
   try {
-    const allEvaluation = "SELECT g_id as id, g_name as name, g_designation as designation, path FROM board_of_evaluation WHERE visibility=true";
+    const allEvaluation = "SELECT g_id as id, g_name as name, g_designation as designation,g_position as position, path FROM board_of_evaluation WHERE visibility=true";
     connection = await pool.connect();
     const alEvaluate = await connection.query(allEvaluation);
     if (alEvaluate.rowCount === 0) {
