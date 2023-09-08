@@ -166,3 +166,95 @@ const imageData = [];
 };
 
 
+//====================================update==================================================
+
+// exports.updateImages=async(req,res)=>{
+//   let connection;
+//   try {
+//     const{id}=req.body;
+//     const image=req.files.image;
+//     if (!image) {
+//       return res.status(400).send({ message: 'No image uploaded!' });
+//     }
+//     const path=image[0].location;
+//     const limit=3;
+//     const checkQuery='SELECT * from about_section_image WHERE a_id=$1';
+//     const updateQuery='UPDATE about_section_image SET path=$1 WHERE a_id=$2 AND id IN (SELECT id FROM about_section_image WHERE a_id=$2 LIMIT $3)';
+
+//     connection=await pool.connect();
+
+//     const resultQuery=await connection.query(checkQuery,[id]);
+//     if(resultQuery.rowCount===0)
+//     {
+//       return res.status(404).send({message:'No Image found!'});
+//     }
+
+//     const aboutData=resultQuery.rows[0];
+//     const{path:currentPath}=aboutData;
+//     const updatePath=path || currentPath;
+//     await connection.query(updateQuery,[updatePath,id,limit]);
+
+//     return res.status(200).send({message:'Successfully Updated!'});
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send({ message: 'Internal server error!' });
+//   }
+//   finally{
+//     if(connection){
+//     connection.release();
+//     }
+//   }
+// }
+
+//============================================delete========================================
+exports.deleteImages = async (req, res) => {
+  let connection;
+  try {
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).send({ message: "Please provide ID" });
+    }
+    connection = await pool.connect();
+    const ExistanceID = "SELECT * FROM about_section_image WHERE a_id=$1";
+    const result = await connection.query(ExistanceID, [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).send({ message: "ID does not exist!" });
+    }
+
+    // Retrieve the file path from the database
+    const filePathQuery = "SELECT path FROM about_section_image WHERE a_id=$1";
+    const filePathResult = await connection.query(filePathQuery, [id]);
+    const filePath = filePathResult.rows[0].path;
+
+    const delSection = "DELETE FROM about_section_image WHERE a_id=$1";
+    await connection.query(delSection, [id]);
+
+    // Delete file from S3
+    const s3Client = new S3Client({
+      region: process.env.BUCKET_REGION,
+      credentials: {
+        accessKeyId: process.env.ACCESS_KEY,
+        secretAccessKey: process.env.SECRET_ACCESS_KEY,
+      },
+    });
+    const key = filePath.substring(filePath.lastIndexOf('/') + 1);
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: key,
+    });
+    await s3Client.send(deleteCommand);
+
+    return res.status(200).send({ message: "Successfully Deleted!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: "Internal server error!" });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
+
+
+

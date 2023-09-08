@@ -45,7 +45,7 @@ finally{
 exports.viewStudies = async (req, res) => {
   let connection;
   try {
-    const allStudies = "SELECT g_id as id, g_name as name, g_designation as designation, path,visibility FROM board_of_studies";
+    const allStudies = "SELECT g_id as id, g_name as name, g_designation as designation,g_position as  position,path,visibility FROM board_of_studies";
     connection = await pool.connect();
     const alStudies = await connection.query(allStudies);
     if (alStudies.rowCount === 0) {
@@ -97,7 +97,7 @@ exports.viewStudies = async (req, res) => {
 exports.viewWebStudies = async (req, res) => {
   let connection;
   try {
-    const allStudies = "SELECT g_id as id, g_name as name, g_designation as designation, path FROM board_of_studies WHERE visibility=true";
+    const allStudies = "SELECT g_id as id, g_name as name, g_designation as designation,g_position as position , path FROM board_of_studies WHERE visibility=true";
     connection = await pool.connect();
     const alStudies = await connection.query(allStudies);
     if (alStudies.rowCount === 0) {
