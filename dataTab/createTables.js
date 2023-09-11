@@ -679,6 +679,7 @@ CREATE TABLE IF NOT EXISTS about_section_image (
   id SERIAL PRIMARY KEY,
   a_id varchar(255) NOT NULL UNIQUE,
   path varchar(255),
+  visibility BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW()
   )`)
 

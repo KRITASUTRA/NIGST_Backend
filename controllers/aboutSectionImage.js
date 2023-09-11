@@ -54,10 +54,9 @@ exports.viewImages=async(req,res)=>
 {
     let connection;
     try{
-        let limit=3;
-    const allView='SELECT a_id as id,path from about_section_image limit $1';
+    const allView='SELECT a_id as id,path,visibility from about_section_image ';
     const connection=await pool.connect();
-    const allImage= await connection.query(allView,[limit]);
+    const allImage= await connection.query(allView);
     if (allImage.rowCount === 0) {
         return res.status(404).send({ message: 'No image Found' });
       }
@@ -67,7 +66,7 @@ exports.viewImages=async(req,res)=>
 const imageData = [];
 
     for (const row of allImage.rows) {
-      const { id, path } = row;
+      const { id, path,visibility } = row;
       const fileUrl = path;
       const key = 'aboutImage/' + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
 
@@ -86,7 +85,7 @@ const imageData = [];
         });
         const path = await getSignedUrl(s3Client, command, { expiresIn: 36000 });
 
-        imageData.push({ id, path });
+        imageData.push({ id, path,visibility });
       } catch (error) {
         console.error(`Error retrieving file '${key}': ${error}`);
       }
@@ -114,7 +113,7 @@ exports.viewWebImages=async(req,res)=>
     let connection;
     try{
         let limit=3;
-    const allView='SELECT a_id as id,path from about_section_image limit $1';
+    const allView='SELECT a_id as id,path from about_section_image WHERE visibility=true LIMIT $1';
     const connection=await pool.connect();
     const allImage= await connection.query(allView,[limit]);
     if (allImage.rowCount === 0) {
@@ -168,43 +167,73 @@ const imageData = [];
 
 //====================================update==================================================
 
-// exports.updateImages=async(req,res)=>{
-//   let connection;
-//   try {
-//     const{id}=req.body;
-//     const image=req.files.image;
-//     if (!image) {
-//       return res.status(400).send({ message: 'No image uploaded!' });
-//     }
-//     const path=image[0].location;
-//     const limit=3;
-//     const checkQuery='SELECT * from about_section_image WHERE a_id=$1';
-//     const updateQuery='UPDATE about_section_image SET path=$1 WHERE a_id=$2 AND id IN (SELECT id FROM about_section_image WHERE a_id=$2 LIMIT $3)';
 
-//     connection=await pool.connect();
 
-//     const resultQuery=await connection.query(checkQuery,[id]);
-//     if(resultQuery.rowCount===0)
-//     {
-//       return res.status(404).send({message:'No Image found!'});
-//     }
+exports.updateVisibleImages = async (req, res) => {
+  let connection;
+  try {
+    const { id, visibility } = req.body;
+    console.log(req.body);
 
-//     const aboutData=resultQuery.rows[0];
-//     const{path:currentPath}=aboutData;
-//     const updatePath=path || currentPath;
-//     await connection.query(updateQuery,[updatePath,id,limit]);
+    if(visibility===true)
+    {
+      const checkQuery = 'SELECT * FROM about_section_image WHERE a_id = $1';
+      const checkQuery1 = 'SELECT * FROM about_section_image WHERE  visibility=true';
+      const updateQuery = 'UPDATE about_section_image SET visibility = $1 WHERE a_id = $2';
+  
+      connection = await pool.connect();
+  
+      const resultQuery = await connection.query(checkQuery, [id]);
+      const resultQuery1 = await connection.query(checkQuery1);
+      if (resultQuery.rowCount === 0) {
+        return res.status(404).send({ message: 'No Images found!' });
+      }
+  
+    
+  
+      if (resultQuery1.rowCount>=3 ) {
+        return res.status(404).send({ message: 'they Only update 3 image!' });
+      }
+      const aboutData = resultQuery.rows[0];
+      const { visibility: currentVisibility } = aboutData;
+      const updatedVisibility = visibility !== undefined ? visibility : currentVisibility;
+  
+      await connection.query(updateQuery, [updatedVisibility, id]);
+  
+      return res.status(200).send({ message: 'Successfully updated  status of image!' });
+    }
+    else{
+      const query='SELECT * FROM about_section_image WHERE a_id=$1';
+      const updateQuery11 = 'UPDATE about_section_image SET visibility = $1 WHERE a_id = $2';
+      connection = await pool.connect();
+  
+      const resultQuery = await connection.query(query, [id]);
 
-//     return res.status(200).send({message:'Successfully Updated!'});
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send({ message: 'Internal server error!' });
-//   }
-//   finally{
-//     if(connection){
-//     connection.release();
-//     }
-//   }
-// }
+      if (resultQuery.rowCount === 0) {
+        return res.status(404).send({ message: 'No Images found!' });
+      }
+
+      const aboutData = resultQuery.rows[0];
+      const { visibility: currentVisibility } = aboutData;
+      const updatedVisibility1 = visibility !== undefined ? visibility : currentVisibility;
+  
+      await connection.query(updateQuery11, [updatedVisibility1, id]);
+  
+      return res.status(200).send({ message: 'Successfully updated status of image!' });
+
+    }
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'Internal server error!' });
+  } finally {
+    if (connection) {
+      await connection.release();
+    }
+  }
+};
+
+
 
 //============================================delete========================================
 exports.deleteImages = async (req, res) => {
