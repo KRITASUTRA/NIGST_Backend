@@ -9,7 +9,7 @@ const { Pool } = require('pg');
 //   }
 // );
 
-const host = 'ec2-65-2-125-229.ap-south-1.compute.amazonaws.com'
+const host = 'ec2-3-110-220-80.ap-south-1.compute.amazonaws.com'
 const database = 'nigst'
 const username = 'kspl'
 const password = 'KSPL@PG123#'
