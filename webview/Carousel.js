@@ -126,7 +126,7 @@ exports.viewCarouselToAdmin = async (req, res) => {
         console.error(error)
         return res.status(500).send({ message: 'Internal Server Error!' });
     } finally {
-      if (connection) {Found
+      if (connection) {
         await connection.release();
       }
     }
