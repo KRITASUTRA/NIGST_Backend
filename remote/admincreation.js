@@ -2,6 +2,7 @@ const pool = require("../config/pool");
 const bcrypt = require('bcrypt')
 const generateNumericValue = require("../generator/NumericId");
 const jwt = require('jsonwebtoken');
+const { blockUser, limiter } = require("../middleware/limiter");
 
 
 exports.adminCreation = async (req, res) => {
@@ -81,69 +82,39 @@ exports.adminCreation = async (req, res) => {
 }
 
 exports.adminLogin = async (req, res) => {
-
-  let client
+  let client;
 
   try {
-    const { email, password, username } = req.body
+    const { email, password, username } = req.body;
+    client = await pool.connect();
 
-     client = await pool.connect()
+    const query = "SELECT * FROM admin WHERE email = $1 OR username=$2";
+    const result = await client.query(query, [email, username]);
 
-    const query = "SELECT * FROM admin WHERE email = $1 OR username=$2"
-
-    const result = await client.query(query, [email, username])
-
-    if (result.rows.length === 0) {
-
-      throw new Error("User Not Exists.")
-
-    }
-
-    const admin = result.rows[0]
-
-    const isMatch = await bcrypt.compare(password, admin.password)
-
-
-    if (!isMatch) {
-
-      throw new Error("Wrong password.")
-    
+    if (result.rows.length === 0 || !bcrypt.compareSync(password, result.rows[0].password)) {
+   
+      return res.status(401).json({ error: "Wrong email/username or password." });
     }
 
     const data = {
+      id: result.rows[0].admin_id,
+    };
 
-      id: result.rows[0].admin_id
+    const token = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const type = result.rows[0].role;
+    const faculty = result.rows[0].faculty;
 
+    return res.send({ message: "Login successful.", token, type, faculty });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).send({ error: 'Server Error.', message: 'An unexpected error occurred.' });
+  } finally {
+    if (client) {
+      await client.release();
     }
-
-    const token = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' })
-
-    const type = result.rows[0].role
-
-    const faculty = result.rows[0].faculty
-
-
-    return res.send({ message: "Login successful.", token, type, faculty })
-
-  
-
-  } 
-  catch (error) {
-
-    console.log(error)
-
-  return  res.status(500).send({ error: "Server Error.", message: error.message })
-
   }
-finally{
-
-  if (client) {
-
-    await client.release()
-
-  }
-}
-}
+};
 
 // exports.adminFilter = async (req, res) => {
 

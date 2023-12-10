@@ -1,12 +1,10 @@
 const pool = require('../config/pool');
 
-const createTables = async () => 
-{
- let  client = await pool.connect();
+const createTables = async () => {
+  let client = await pool.connect();
 
-  try 
-    {
-      await client.query
+  try {
+    await client.query
       (`
         CREATE TABLE IF NOT EXISTS faculty_name
         (
@@ -18,7 +16,7 @@ const createTables = async () =>
       `)
 
 
-      await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS admin (
   id SERIAL PRIMARY KEY,
   username varchar(255) NOT NULL UNIQUE,
@@ -32,8 +30,8 @@ CREATE TABLE IF NOT EXISTS admin (
   create_at TIMESTAMP DEFAULT NOW(),
   update_at TIMESTAMP DEFAULT NOW()
 )`)
-  
-      await client.query
+
+    await client.query
       (`
         CREATE TABLE IF NOT EXISTS course_category 
           (
@@ -44,7 +42,7 @@ CREATE TABLE IF NOT EXISTS admin (
           )
       `)
 
-      await client.query(`
+    await client.query(`
     CREATE TABLE IF NOT EXISTS category_code (
       id serial PRIMARY KEY,
       category varchar(255) REFERENCES course_category(course_category_name),
@@ -54,8 +52,8 @@ CREATE TABLE IF NOT EXISTS admin (
 `);
 
 
-      await client.query(
-        `
+    await client.query(
+      `
         CREATE TABLE IF NOT EXISTS category_number
         (
          id serial PRIMARY KEY,
@@ -63,9 +61,9 @@ CREATE TABLE IF NOT EXISTS admin (
          number INTEGER NOT NULL,
          CONSTRAINT uc_category_number UNIQUE (category,number)
         )`
-      )
+    )
 
-      await client.query
+    await client.query
       (`
         CREATE TABLE IF NOT EXISTS faculty_position
         (
@@ -76,7 +74,7 @@ CREATE TABLE IF NOT EXISTS admin (
         )
       `)
 
-      await client.query
+    await client.query
       (`
         CREATE TABLE IF NOT EXISTS faculty 
         (
@@ -100,8 +98,8 @@ CREATE TABLE IF NOT EXISTS admin (
           updated_at TIMESTAMP DEFAULT NOW()
         )
       `)
-     
-      await client.query
+
+    await client.query
       (`
         CREATE TABLE IF NOT EXISTS faculty_passwords 
         (
@@ -114,7 +112,7 @@ CREATE TABLE IF NOT EXISTS admin (
         )
       `)
 
-      await client.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS faculty_position_assi(
         id SERIAL PRIMARY KEY,
         faculty_id varchar(255) NOT NULL REFERENCES faculty(faculty_id),
@@ -129,9 +127,9 @@ CREATE TABLE IF NOT EXISTS admin (
       `)
 
 
-  
 
-      await client.query(`
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS organizations (
         id SERIAL PRIMARY KEY,
         organization VARCHAR(255) NOT NULL,
@@ -143,12 +141,12 @@ CREATE TABLE IF NOT EXISTS admin (
         phone VARCHAR(255)
       )
     `);
-     
-
-  
 
 
-await client.query(`
+
+
+
+    await client.query(`
   CREATE TABLE IF NOT EXISTS users 
   (
     id SERIAL PRIMARY KEY,
@@ -174,7 +172,7 @@ await client.query(`
 
 
     await client.query
-    (`
+      (`
       CREATE TABLE IF NOT EXISTS password 
         (
           id SERIAL PRIMARY KEY,
@@ -187,7 +185,7 @@ await client.query(`
     `)
 
 
-      await client.query
+    await client.query
       (`
       CREATE TABLE IF NOT EXISTS courses 
       (
@@ -211,8 +209,8 @@ await client.query(`
       )
       
       `)
-    
-      await client.query(`
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS course_scheduler (
         id SERIAL primary key,
         name varchar(255) NOT NULL REFERENCES courses(title),
@@ -230,7 +228,7 @@ await client.query(`
         CONSTRAINT unique_course_batch UNIQUE (course_id, batch_no)
       )
     `)
-    
+
     await client.query(`
     CREATE TABLE IF NOT EXISTS course_scheduler_archive (
       id SERIAL primary key,
@@ -249,11 +247,11 @@ await client.query(`
       archived_at DATE DEFAULT NOW()
     )
   `)
-  
+
 
 
     await client.query
-    (`
+      (`
       CREATE TABLE IF NOT EXISTS announcement
       (
         id SERIAL PRIMARY KEY,
@@ -270,7 +268,7 @@ await client.query(`
 
 
     await client.query
-    (`
+      (`
       CREATE TABLE IF NOT EXISTS archive_announcement
       (
   
@@ -288,8 +286,8 @@ await client.query(`
     `)
 
 
-await client.query(
-  `CREATE TABLE IF NOT EXISTS contact_form(
+    await client.query(
+      `CREATE TABLE IF NOT EXISTS contact_form(
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -299,15 +297,15 @@ await client.query(
     received_at TIMESTAMP DEFAULT NOW( )
   )
   `
-)
+    )
 
 
 
 
 
 
-await client.query
-(`
+    await client.query
+      (`
   CREATE TABLE IF NOT EXISTS visitors 
   (
     uid SERIAL PRIMARY KEY,
@@ -322,7 +320,7 @@ await client.query
 
 
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS album_category (
   id SERIAL PRIMARY KEY,
   category_name varchar(255) NOT NULL UNIQUE,
@@ -330,7 +328,7 @@ CREATE TABLE IF NOT EXISTS album_category (
   )`)
 
 
-  await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS album (
   id SERIAL PRIMARY KEY,
   category_name varchar(255) NOT NULL REFERENCES album_category(category_name),
@@ -341,7 +339,7 @@ CREATE TABLE IF NOT EXISTS album (
   )`)
 
 
-      await client.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS sms_messages (
         id SERIAL PRIMARY KEY,
         phone_number TEXT NOT NULL,
@@ -349,7 +347,7 @@ CREATE TABLE IF NOT EXISTS album (
         created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
         )`)
 
-        await client.query(`
+    await client.query(`
         CREATE TABLE IF NOT EXISTS otps (
           id SERIAL PRIMARY KEY,
           phone_number VARCHAR(20) NOT NULL UNIQUE,
@@ -359,7 +357,7 @@ CREATE TABLE IF NOT EXISTS album (
           )`)
 
 
-  await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS vidGallery 
     (
       id SERIAL PRIMARY KEY,
@@ -369,7 +367,7 @@ CREATE TABLE IF NOT EXISTS album (
     )
 `)
 
- await client.query(`
+    await client.query(`
  CREATE TABLE IF NOT EXISTS organization_course_assi(
   id SERIAL PRIMARY KEY,
   organization_name varchar(255) NOT NULL REFERENCES organizations(organization),
@@ -385,7 +383,7 @@ CREATE TABLE IF NOT EXISTS album (
  )
  `)
 
- await client.query(`
+    await client.query(`
  CREATE TABLE IF NOT EXISTS enrolment(
   id SERIAL PRIMARY KEY,
   scheduling_id varchar(255) NOT NULL REFERENCES course_scheduler(course_scheduler_id),
@@ -399,7 +397,7 @@ CREATE TABLE IF NOT EXISTS album (
 
  )
  `)
- await client.query(`
+    await client.query(`
  CREATE TABLE IF NOT EXISTS archive_enrolment(
   id SERIAL PRIMARY KEY,
   scheduling_id varchar(255) NOT NULL ,
@@ -413,7 +411,7 @@ CREATE TABLE IF NOT EXISTS album (
 
  )
  `)
- await client.query(`
+    await client.query(`
  
  CREATE TABLE IF NOT EXISTS archive_enroll(
   id SERIAL PRIMARY KEY,
@@ -427,7 +425,7 @@ CREATE TABLE IF NOT EXISTS album (
   cancel_date DATE DEFAULT NOW()
  )`)
 
-  await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS tender(
     id SERIAL PRIMARY KEY,
     title varchar(255) NOT NULL,
@@ -459,8 +457,8 @@ CREATE TABLE IF NOT EXISTS album (
       created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (tender_ref_no) REFERENCES tender(tender_ref_no)
       )`);
-      await client.query(
-        `
+    await client.query(
+      `
         CREATE TABLE IF NOT EXISTS archive_corrigendum(
           id SERIAL PRIMARY KEY,
           corrigendum text,
@@ -470,12 +468,12 @@ CREATE TABLE IF NOT EXISTS album (
           created_at TIMESTAMP,
           archived_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`
-      )
-  
-  
+    )
 
- 
-await client.query(`
+
+
+
+    await client.query(`
 CREATE TABLE IF NOT EXISTS report_submission (
   id SERIAL PRIMARY KEY,
   faculty_id varchar(255) REFERENCES faculty(faculty_id),
@@ -488,8 +486,8 @@ CREATE TABLE IF NOT EXISTS report_submission (
 
 
 )`)
-   
-await client.query(`
+
+    await client.query(`
 CREATE TABLE IF NOT EXISTS banner(
   id SERIAL PRIMARY KEY,
   name varchar(255),
@@ -500,7 +498,7 @@ CREATE TABLE IF NOT EXISTS banner(
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`)
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS header(
   id SERIAL PRIMARY KEY,
   h_id varchar(255),
@@ -512,7 +510,7 @@ CREATE TABLE IF NOT EXISTS header(
 )
 `)
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS footer(
   id SERIAL PRIMARY KEY,
   name varchar(255),
@@ -527,7 +525,7 @@ CREATE TABLE IF NOT EXISTS footer(
 )`)
 
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS soi_project(
  id SERIAL PRIMARY KEY,
  p_id varchar(255),
@@ -539,7 +537,7 @@ CREATE TABLE IF NOT EXISTS soi_project(
  date TIMESTAMP DEFAULT NOW()
 )`)
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS office(
  id SERIAL PRIMARY KEY,
  o_id varchar(255),
@@ -549,7 +547,7 @@ CREATE TABLE IF NOT EXISTS office(
  date DATE 
 )`)
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS marquee(
   id SERIAL PRIMARY KEY,
   marquee_id varchar(255),
@@ -563,8 +561,8 @@ CREATE TABLE IF NOT EXISTS marquee(
 
 )
 `)
-await client.query(
-  `
+    await client.query(
+      `
   
   CREATE TABLE IF NOT EXISTS home_carousel(
     id SERIAL PRIMARY KEY,
@@ -576,10 +574,10 @@ await client.query(
   )
 
   `
-)
+    )
 
-await client.query(
-  `
+    await client.query(
+      `
   CREATE TABLE IF NOT EXISTS social_media(
     id SERIAL PRIMARY KEY,
     sm_id varchar(255),
@@ -588,9 +586,9 @@ await client.query(
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS about_section(
     id SERIAL PRIMARY KEY,
     a_id varchar(255),
@@ -600,9 +598,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS campus(
     id SERIAL PRIMARY KEY,
     c_id varchar(255),
@@ -611,9 +609,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS sports_facility(
     id SERIAL PRIMARY KEY,
     s_id varchar(255),
@@ -622,9 +620,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS nigst_hostel(
     id SERIAL PRIMARY KEY,
     h_id varchar(255),
@@ -633,9 +631,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS board_of_governance(
     id SERIAL PRIMARY KEY,
     g_id varchar(255),
@@ -646,9 +644,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS board_of_Evaluation(
     id SERIAL PRIMARY KEY,
     g_id varchar(255),
@@ -659,9 +657,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
   CREATE TABLE IF NOT EXISTS board_of_studies(
     id SERIAL PRIMARY KEY,
     g_id varchar(255),
@@ -672,9 +670,9 @@ await client.query(`
     visibility BOOLEAN DEFAULT FALSE,
     date TIMESTAMP DEFAULT NOW()
   )`
-)
+    )
 
-await client.query(`
+    await client.query(`
 CREATE TABLE IF NOT EXISTS about_section_image (
   id SERIAL PRIMARY KEY,
   a_id varchar(255) NOT NULL UNIQUE,
@@ -683,16 +681,25 @@ CREATE TABLE IF NOT EXISTS about_section_image (
   created_at TIMESTAMP DEFAULT NOW()
   )`)
 
+    await client.query(`
+  CREATE TABLE IF NOT EXISTS blocked_users (
+    id SERIAL PRIMARY KEY,
+    ip varchar(255) NOT NULL UNIQUE,
+    blocked_until TIMESTAMP NOT NULL,
+    reason varchar(255)
+  )
+`);
 
 
-  console.log('Tables created successfully')
+
+    console.log('Tables created successfully')
   }
 
   catch (err) {
     console.error(err)
   }
-  
-  finally{
+
+  finally {
     await client.release()
   }
 }
