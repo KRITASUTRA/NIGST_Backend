@@ -8,6 +8,7 @@ dotenv.config()
 const app = express()
 
 app.use(helmet())
+app.use(hpp())
 app.disable('x-powered-by')
 
 

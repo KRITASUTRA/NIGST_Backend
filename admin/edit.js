@@ -1,5 +1,6 @@
 const pool = require("../config/pool");
-const fs = require('fs')
+const fs = require('fs');
+const ErrorLogger = require("../middleware/debugger");
 
 
 
@@ -25,7 +26,7 @@ exports.updateAdminVerificationStatus = async (req, res) => {
 
     return res.status(200).send({ message: 'Admin verification status updated successfully' });
   } catch (error) {
-    console.error(error);
+ErrorLogger(error)
     return res.status(500).send({ message: 'Something went wrong' });
   } finally {
     if (client) {
@@ -52,7 +53,7 @@ exports.loginAccess = async (req, res) => {
       return res.status(200).send({ message: 'Access Changed!.' });
     }
   } catch (error) {
-    console.error(error);
+ErrorLogger(error)
     return res.status(500).send({ message: 'Internal Server Error.' });
   } finally {
     if (client) {
@@ -78,7 +79,7 @@ exports.activeInactive = async (req, res) => {
       return res.status(200).send({ message: 'Access Changed!.' });
     }
   } catch (error) {
-    console.error(error);
+ErrorLogger(error)
     return res.status(500).send({ message: 'Internal Server Error.' });
   } finally {
     if (client) {
@@ -563,7 +564,7 @@ const moveCourseScheduler = 'INSERT INTO course_scheduler_archive SELECT * FROM 
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     await client.query('ROLLBACK')
 
@@ -616,7 +617,7 @@ exports.editAnnouncementForPosting = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+    ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error!.' })
 
@@ -649,7 +650,9 @@ exports.updateFacultyDetails = async (req, res) => {
     await connection.query(updateQ, data)
     return res.status(200).send({ message: 'Successfully Updated!.' })
   } catch (error) {
-    console.error(error)
+
+    ErrorLogger(error)
+
     return res.status(500).send({ message: 'Internal Server Error!.' })
   }
   finally {

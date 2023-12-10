@@ -1,4 +1,5 @@
-const pool = require("../config/pool")
+const pool = require("../config/pool");
+const ErrorLogger = require("../middleware/debugger");
 
 
 
@@ -23,7 +24,7 @@ exports.deleteSchedulingCourse = async (req, res) => {
       }
     }
   } catch (error) {
-    console.error(error);
+ErrorLogger(error)
    return res.status(500).send({ message: 'Internal Server Error!' });
   } finally {
     if (client) {

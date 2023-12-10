@@ -1,5 +1,6 @@
 const pool = require("../config/pool");
 const generateNumericValue = require("../generator/NumericId");
+const ErrorLogger = require("../middleware/debugger");
 
 
 
@@ -50,8 +51,7 @@ exports.createAnnouncement = async (req, res) => {
   } 
   catch (error) {
   
-    console.error(error)
-  
+ErrorLogger(error)  
     return res.status(500).send({ message: 'Internal Server Error!' })
   
   } 
@@ -96,7 +96,7 @@ exports.archiveAnnouncement = async (req, res) => {
       
     });
   } catch (error) {
-    console.error(error);
+ErrorLogger(error)
     if (connection) {
       await connection.query('ROLLBACK'); 
     }
@@ -140,8 +140,7 @@ exports.retrieveAnnouncement = async (req, res) => {
 
     await client.query('ROLLBACK')
 
-    console.error(error)
-
+ErrorLogger(error)
     res.status(500).send({ message: "Something went wrong!" })
 
   }
@@ -171,8 +170,7 @@ exports.viewAnnouncements = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
-
+ErrorLogger(error)
     return res.status(500).send({ message: 'Something went wrong!' })
 
   }
@@ -230,8 +228,7 @@ exports.assignSubjects = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
-
+ErrorLogger(error)
     res.status(500).send({ message: 'Something went wrong!' })
 
   }
@@ -265,7 +262,7 @@ exports.createFaculty = async (req, res) => {
       return res.status(201).send({ message: 'Successfully Created.' });
     }
   } catch (error) {
-    console.error(error);
+ErrorLogger(error)
     return res.status(500).send({ message: 'Internal Server Error.' });
   } finally {
     if (connection) {

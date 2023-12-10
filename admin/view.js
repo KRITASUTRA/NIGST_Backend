@@ -1,6 +1,7 @@
 const pool = require("../config/pool")
 const path = require('path')
 const fs = require('fs');
+const ErrorLogger = require("../middleware/debugger");
 
 
 exports.viewAllStudents = async (req, res) => {
@@ -25,7 +26,7 @@ exports.viewAllStudents = async (req, res) => {
 
   } catch (error) {
 
-    console.log(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Something went wrong!.' })
 
@@ -80,7 +81,7 @@ exports.organizationFilter = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal server error.' })
 
@@ -118,7 +119,7 @@ exports.viewAllCourses = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Something went wrong!.' })
 
@@ -158,7 +159,7 @@ exports.viewArchiveAnnouncementToAdmin = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: "Something went wrong." })
 
@@ -194,7 +195,7 @@ exports.allFacultyDetail = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).json({ message: 'Something went wrong.' })
 
@@ -234,7 +235,7 @@ exports.viewFacultyName = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(400).send({ message: 'Something went wrong.' })
 
@@ -276,7 +277,7 @@ exports.viewFacultyWithAccess = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error.' })
 
@@ -320,7 +321,7 @@ exports.viewFacultyMembersWithFaculty = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error.' })
 
@@ -382,7 +383,7 @@ exports.viewCourseByFaculty = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error.' })
 
@@ -424,7 +425,7 @@ exports.viewAllEnrollment = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error.' })
 
@@ -465,7 +466,7 @@ exports.viewAllCancelEnrollment = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error.' })
 
@@ -504,7 +505,7 @@ exports.showReportsToAdmin = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error!' })
 
@@ -601,7 +602,7 @@ exports.filter = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal server error.' })
 
@@ -643,7 +644,7 @@ exports.viewAnnouncementToAdmin = async (req, res) => {
   }
   catch (error) {
 
-    console.error(error)
+ErrorLogger(error)
 
     return res.status(500).send({ message: 'Internal Server Error!.' })
 
@@ -692,7 +693,7 @@ exports.viewCancelledCourses=async(req,res)=>{
     }
     return res.status(200).send({courses:result.rows})
   } catch (error) {
-    console.error(error)
+ErrorLogger(error)
     return res.status(500).send({message:'Internal Server Error!.'})
   }
   finally{

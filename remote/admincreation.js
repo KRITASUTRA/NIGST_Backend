@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const generateNumericValue = require("../generator/NumericId");
 const jwt = require('jsonwebtoken');
 const { blockUser, limiter } = require("../middleware/limiter");
+const ErrorLogger = require("../middleware/debugger");
 
 
 exports.adminCreation = async (req, res) => {
@@ -66,7 +67,7 @@ exports.adminCreation = async (req, res) => {
   }
    catch (error) {
 
-    console.log(error)
+    ErrorLogger(error)
 
     return res.status(500).send({ error: error.message || "Internal Server Error." })
 
@@ -106,8 +107,7 @@ exports.adminLogin = async (req, res) => {
 
     return res.status(200).send({ message: "Login successful.", token, type, faculty });
   } catch (error) {
-    console.log(error);
-
+ErrorLogger(error)
     return res.status(500).send({ error: 'Server Error.', message: 'An unexpected error occurred.' });
   } finally {
     if (client) {
