@@ -104,7 +104,7 @@ exports.adminLogin = async (req, res) => {
     const type = result.rows[0].role;
     const faculty = result.rows[0].faculty;
 
-    return res.send({ message: "Login successful.", token, type, faculty });
+    return res.status(200).send({ message: "Login successful.", token, type, faculty });
   } catch (error) {
     console.log(error);
 
