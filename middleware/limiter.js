@@ -8,20 +8,20 @@ const IPlimiter = rateLimit({
   legacyHeaders: false,
   message: 'Too many login attempts from this IP. Try again later.',
   keyGenerator: function (req,res) {
-    console.log(req.ip)
-    return req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    // console.log(req.ip)
+    return req.headers["x-forwarded-for"] || req.connection.remoteAddress||req.ip;
  
-}
-  // handler: async (req, res, next) => {
-  //   try {
-  //     const blockedUntil = new Date(Date.now() + 60000);
-  //     await blockUser(req.ip, blockedUntil, "Maximum failed attempts reached.");
-  //     return res.status(429).json({ error: "Too many requests. IP blocked." });
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).json({ error: 'Internal Server Error' });
-  //   }
-  // },
+},
+  handler: async (req, res, next) => {
+    try {
+      const blockedUntil = new Date(Date.now() + 60000);
+      await blockUser(req.ip, blockedUntil, "Maximum failed attempts reached.");
+      return res.status(429).json({ error: "Too many requests. IP blocked." });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
 });
 
 const checkBlockedIP = async (req, res, next) => {
