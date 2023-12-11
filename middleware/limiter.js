@@ -8,7 +8,7 @@ const IPlimiter = rateLimit({
   legacyHeaders: false,
   message: 'Too many login attempts from this IP. Try again later.',
   keyGenerator: function (req,res) {
-    console.log(req.connection.remoteAddress)
+    console.log(req.headers["x-forwarded-for"])
     return req.headers["x-forwarded-for"] || req.connection.remoteAddress;
  
 }
