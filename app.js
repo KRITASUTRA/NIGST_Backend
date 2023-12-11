@@ -11,7 +11,7 @@ app.use(helmet())
 app.use(hpp())
 app.disable('x-powered-by')
 
-
+app.set('trust proxy', 1)
 
 
 const coursec = require('./routes/coursesRoutes')
