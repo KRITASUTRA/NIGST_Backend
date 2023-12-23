@@ -139,7 +139,6 @@
 // const tenderpdf=createUploadMiddleware('tender')
 // const corrigendum=createUploadMiddleware('tender/corrigendum')
 
-
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
@@ -147,9 +146,9 @@ const path = require('path');
 
 // AWS S3 configuration
 const s3 = new S3Client({
-  region:  process.env.BUCKET_REGION,
+  region: process.env.BUCKET_REGION,
   credentials: {
-    accessKeyId:  process.env.ACCESS_KEY,
+    accessKeyId: process.env.ACCESS_KEY,
     secretAccessKey: process.env.SECRET_ACCESS_KEY
   }
 });
@@ -162,16 +161,15 @@ const s3Storage = multerS3({
   contentType: multerS3.AUTO_CONTENT_TYPE,
   key: function (req, file, cb) {
     const { destination } = req;
-    const filetypes = /jpeg|jpg|png|gif|mp4|mov|pdf|files/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
+    const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif', 'mp4', 'mov', 'pdf', 'files'];
+    const extname = path.extname(file.originalname).toLowerCase().replace('.', '');
 
-    if (mimetype && extname) {
-      // Include destination directory in S3 object key
+    if (allowedFiletypes.includes(extname)) {
       const key = `${destination}/${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
 
-      // Replace %2F with /
-      const correctedKey = key.replace(/%2F/g, '/');
+      const sanitizedKey = key.replace(/(\.[^\/\.]+)+$/, '');
+
+      const correctedKey = sanitizedKey.replace(/%2F/g, '/');
 
       return cb(null, correctedKey);
     } else {
@@ -180,26 +178,30 @@ const s3Storage = multerS3({
   }
 });
 
+function checkFileType(file, cb) {
+  const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif', 'mp4', 'mov', 'pdf', 'files'];
+  const extname = path.extname(file.originalname).toLowerCase().replace('.', '');
+
+  const isScriptFile = ['.js', '.jsx', '.sh', '.bat', '.cmd'].includes(extname);
+
+  if (isScriptFile || !allowedFiletypes.includes(extname)) {
+    return cb('Error: Images, Videos, and PDFs Only!');
+  }
+
+  return cb(null, true);
+}
+
 
 function createUploadMiddleware(destination) {
   const upload = multer({
     storage: s3Storage,
     limits: { fileSize: 1024 * 1024 * 500 },
     fileFilter: function (req, file, cb) {
-      const filetypes = /jpeg|jpg|png|gif|mp4|mov|pdf|files/;
-      const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-      const mimetype = filetypes.test(file.mimetype);
-
-      if (mimetype && extname) {
-        return cb(null, true);
-      } else {
-        return cb('Error: Images, Videos, and PDFs Only!');
-      }
+      checkFileType(file, cb);
     },
   }).fields([{ name: 'image', maxCount: 10 }, { name: 'video', maxCount: 1 }, { name: 'pdf', maxCount: 1 }, { name: 'file', maxCount: 1 }]);
 
   return function (req, res, next) {
-    // Set destination directory in request object
     req.destination = destination;
 
     const uploadType = req.query.uploadType || 'single';
@@ -207,7 +209,11 @@ function createUploadMiddleware(destination) {
 
     upload(req, res, function (err) {
       if (err instanceof multer.MulterError) {
-        return res.status(500).json({ message: 'Multer Error: ' + err.message });
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ message: 'Error: File size exceeds the limit (500 MB)' });
+        } else {
+          return res.status(500).json({ message: 'Multer Error: ' + err.message });
+        }
       } else if (err) {
         return res.status(500).json({ message: 'Error: ' + err });
       }
@@ -216,7 +222,6 @@ function createUploadMiddleware(destination) {
   };
 }
 
-// Use createUploadMiddleware to create middleware for different paths
 const uploadFacultyPhoto = createUploadMiddleware('faculty');
 const uploadStudentPhoto = createUploadMiddleware('student');
 const uploadAnnouncement = createUploadMiddleware('announcement');
@@ -225,19 +230,41 @@ const videoUpload = createUploadMiddleware('videos');
 const pdfUpload = createUploadMiddleware('pdf');
 const tenderpdf = createUploadMiddleware('tender');
 const corrigendum = createUploadMiddleware('tender/corrigendum');
-const reportSubmit= createUploadMiddleware('report')
-const bannerUpload=createUploadMiddleware('banner')
+const reportSubmit = createUploadMiddleware('report');
+const bannerUpload = createUploadMiddleware('banner');
 
-const SOI_PROJECT_UPLOAD=createUploadMiddleware('soi_project');
-const headerUpload=createUploadMiddleware('header_upload');
-const homeCarousel=createUploadMiddleware('home_carousel');
-const campus_upload=createUploadMiddleware('campuss');
-const aboutSection=createUploadMiddleware('about_section');
-const sportsFacility=createUploadMiddleware('sports_facility')
-const boardGovernancee=createUploadMiddleware('governance')
-const nigstHostell=createUploadMiddleware('nigst_hostel')
-const boardOfEvaluation=createUploadMiddleware('evaluation')
-const boardOfStudies=createUploadMiddleware('studies')
-const aboutSectionImage=createUploadMiddleware('aboutImage')
+const SOI_PROJECT_UPLOAD = createUploadMiddleware('soi_project');
+const headerUpload = createUploadMiddleware('header_upload');
+const homeCarousel = createUploadMiddleware('home_carousel');
+const campus_upload = createUploadMiddleware('campuss');
+const aboutSection = createUploadMiddleware('about_section');
+const sportsFacility = createUploadMiddleware('sports_facility');
+const boardGovernancee = createUploadMiddleware('governance');
+const nigstHostell = createUploadMiddleware('nigst_hostel');
+const boardOfEvaluation = createUploadMiddleware('evaluation');
+const boardOfStudies = createUploadMiddleware('studies');
+const aboutSectionImage = createUploadMiddleware('aboutImage');
 
-module.exports = { uploadFacultyPhoto, uploadStudentPhoto,uploadAnnouncement,galleryUpload,videoUpload,pdfUpload,tenderpdf,corrigendum,reportSubmit,bannerUpload,SOI_PROJECT_UPLOAD,headerUpload,homeCarousel, campus_upload,aboutSection,sportsFacility,boardGovernancee,nigstHostell,boardOfEvaluation,boardOfStudies,aboutSectionImage};
+module.exports = {
+  uploadFacultyPhoto,
+  uploadStudentPhoto,
+  uploadAnnouncement,
+  galleryUpload,
+  videoUpload,
+  pdfUpload,
+  tenderpdf,
+  corrigendum,
+  reportSubmit,
+  bannerUpload,
+  SOI_PROJECT_UPLOAD,
+  headerUpload,
+  homeCarousel,
+  campus_upload,
+  aboutSection,
+  sportsFacility,
+  boardGovernancee,
+  nigstHostell,
+  boardOfEvaluation,
+  boardOfStudies,
+  aboutSectionImage
+};
