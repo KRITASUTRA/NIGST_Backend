@@ -144,7 +144,6 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 
-// AWS S3 configuration
 const s3 = new S3Client({
   region: process.env.BUCKET_REGION,
   credentials: {
@@ -154,7 +153,6 @@ const s3 = new S3Client({
 });
 const s3BucketName = process.env.BUCKET_NAME;
 
-// Middleware to upload files to S3
 const s3Storage = multerS3({
   s3,
   bucket: s3BucketName,
@@ -179,7 +177,7 @@ const s3Storage = multerS3({
 });
 
 function checkFileType(file, cb) {
-  const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif', 'mp4', 'mov', 'pdf', 'files'];
+  const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif',  'pdf'];
   const extname = path.extname(file.originalname).toLowerCase().replace('.', '');
 
   const isScriptFile = ['.js', '.jsx', '.sh', '.bat', '.cmd'].includes(extname);

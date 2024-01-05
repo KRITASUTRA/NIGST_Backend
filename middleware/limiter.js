@@ -2,13 +2,12 @@ const { default: rateLimit } = require("express-rate-limit");
 const pool = require("../config/pool");
 
 const IPlimiter = rateLimit({
-  windowMs: 60000,
+  windowMs: 180000,
   limit: 5,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: 'Too many login attempts from this IP. Try again later.',
   keyGenerator: function (req,res) {
-    // console.log(req.ip)
     return req.headers["x-forwarded-for"] || req.connection.remoteAddress||req.ip;
  
 },
