@@ -7,6 +7,7 @@ const generateNumericValue = require("../generator/NumericId");
 const generatePassword = require('generate-password');
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { v4: uuidv4 } = require('uuid');
+const { checkBlockedIP } = require("../middleware/limiter");
 
 
 
@@ -171,9 +172,7 @@ exports.facultyLogin = async (req, res) => {
   try {
 
     const { email, password } = req.body
-
     client = await pool.connect()
-
 
     const userQuery =` SELECT faculty,faculty_id,email,admin_verified,CONCAT(first_name, ' ', middle_name, ' ', last_name) as name FROM faculty WHERE email = $1`
 
