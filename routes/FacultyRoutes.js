@@ -7,7 +7,7 @@ const router= express.Router()
 
 router.post('/create',facultyCreation)
 router.post('/forget',facultyPassForgot)
-router.post('/login',IPlimiter,facultyLogin)
+router.post('/login',IPlimiter,checkBlockedIP,facultyLogin)
 router.patch('/reset', fPassReset)
 router.patch('/change',fChangePassword)
 // router.patch('/update',uploadFacultyPhoto,updateFacultyDetails)

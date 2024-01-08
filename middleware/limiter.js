@@ -11,67 +11,67 @@ const IPlimiter = rateLimit({
     return req.headers["x-forwarded-for"] || req.connection.remoteAddress||req.ip;
  
 },
-  // handler: async (req, res, next) => {
-  //   try {
-  //     const blockedUntil = new Date(Date.now() + 60000);
-  //     await blockUser(req.ip, blockedUntil, "Maximum failed attempts reached.");
-  //     return res.status(429).json({ error: "Too many requests. IP blocked." });
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).json({ error: 'Internal Server Error' });
-  //   }
-  // },
+  handler: async (req, res, next) => {
+    try {
+      const blockedUntil = new Date(Date.now() + 600000);
+      await blockUser(req.ip, blockedUntil, "Maximum failed attempts reached.");
+      return res.status(429).json({ error: "Too many requests. IP blocked." });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
 });
 
-// const checkBlockedIP = async (req, res, next) => {
-//   try {
-//     const { ip } = req;
-//     const blockedUser = await pool.query(
-//       'SELECT * FROM blocked_users WHERE ip = $1 AND blocked_until > NOW()',
-//       [ip]
-//     );
+const checkBlockedIP = async (req, res, next) => {
+  try {
+    const { ip } = req;
+    const blockedUser = await pool.query(
+      'SELECT * FROM blocked_users WHERE ip = $1 AND blocked_until > NOW()',
+      [ip]
+    );
 
-//     if (blockedUser.rows.length > 0) {
-//       const blockedUntil = blockedUser.rows[0].blocked_until;
+    if (blockedUser.rows.length > 0) {
+      const blockedUntil = blockedUser.rows[0].blocked_until;
 
-//       if (blockedUntil > new Date()) {
-//         return res.status(403).json({
-//           message: 'IP blocked. Try again later.',
-//           blockedUntil,
-//         });
-//       } else {
-//         await unblockIP(ip);
-//       }
-//     }
+      if (blockedUntil > new Date()) {
+        return res.status(403).json({
+          message: 'IP blocked. Try again later.',
+          blockedUntil,
+        });
+      } else {
+        await unblockIP(ip);
+      }
+    }
 
-//     next();
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// };
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
-// async function unblockIP(ip) {
-//   try {
-//     const query = 'DELETE FROM blocked_users WHERE ip = $1';
-//     await pool.query(query, [ip]);
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// }
+async function unblockIP(ip) {
+  try {
+    const query = 'DELETE FROM blocked_users WHERE ip = $1';
+    await pool.query(query, [ip]);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 
-// async function blockUser(ip, blockedUntil, reason) {
-//   try {
-//     const query = `
-//       INSERT INTO blocked_users (ip, blocked_until, reason)
-//       VALUES ($1, $2, $3)
-//     `;
-//     await pool.query(query, [ip, blockedUntil, reason]);
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// }
+async function blockUser(ip, blockedUntil, reason) {
+  try {
+    const query = `
+      INSERT INTO blocked_users (ip, blocked_until, reason)
+      VALUES ($1, $2, $3)
+    `;
+    await pool.query(query, [ip, blockedUntil, reason]);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
 
-module.exports = { IPlimiter };
+module.exports = { IPlimiter,checkBlockedIP };
