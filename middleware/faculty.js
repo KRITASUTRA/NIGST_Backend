@@ -162,7 +162,6 @@ const s3Storage = multerS3({
     const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif', 'mp4', 'mov', 'pdf', 'files'];
     const filename = file.originalname.toLowerCase();
   
-    // Check for multiple extensions in the filename
     if (filename.split('.').length > 2) {
       return cb('Error: Files with multiple extensions are not allowed!');
     }
