@@ -160,22 +160,19 @@ const s3Storage = multerS3({
   key: function (req, file, cb) {
     const { destination } = req;
     const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif', 'mp4', 'mov', 'pdf', 'files'];
-    const extname = path.extname(file.originalname).toLowerCase().replace('.', '');
+    const filename = file.originalname.toLowerCase();
   
-    if (allowedFiletypes.includes(extname)) {
-      const timestamp = Date.now();
-      const originalExtension = path.extname(file.originalname).toLowerCase();
-      const key = `${destination}/${file.fieldname}-${timestamp}${originalExtension}`;
+    // Check for multiple extensions in the filename
+    if (filename.split('.').length > 2) {
+      return cb('Error: Files with multiple extensions are not allowed!');
+    }
   
-      const extensionsCount = key.split('.').length - 1;
+    const timestamp = Date.now();
+    const originalExtension = path.extname(file.originalname).toLowerCase();
+    const key = `${destination}/${file.fieldname}-${timestamp}${originalExtension}`;
+    const correctedKey = key.replace(/%2F/g, '/');
   
-      if (extensionsCount > 1) {
-        return cb('Error: Files with multiple extensions are not allowed!');
-      }
-  
-      const sanitizedKey = key.replace(/(\.[^\/\.]+)+$/, '');
-      const correctedKey = sanitizedKey.replace(/%2F/g, '/');
-  
+    if (allowedFiletypes.includes(originalExtension.replace('.', ''))) {
       return cb(null, correctedKey);
     } else {
       return cb('Error: Images, Videos, and PDFs Only!');
