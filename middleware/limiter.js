@@ -13,7 +13,7 @@ const IPlimiter = rateLimit({
   handler: async (req, res, next) => {
     try {
 
-      const blockedUntil = new Date(Date.now() + 60000);
+      const blockedUntil = new Date(Date.now() + 600000);
       await blockUser(req.ip, blockedUntil, "Maximum failed attempts reached.");
       return res.status(429).json({ error: "Too many requests. IP blocked." });
     } catch (error) {
