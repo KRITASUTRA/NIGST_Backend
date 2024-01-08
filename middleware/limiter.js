@@ -25,7 +25,7 @@ const IPlimiter = rateLimit({
 
 const LimitUpload = rateLimit({
   windowMs: 180000,
-  limit: 5,
+  limit: 12,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: 'Too many login attempts from this IP. Try again later.',
