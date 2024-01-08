@@ -161,26 +161,35 @@ const s3Storage = multerS3({
     const { destination } = req;
     const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif', 'mp4', 'mov', 'pdf', 'files'];
     const extname = path.extname(file.originalname).toLowerCase().replace('.', '');
-
+  
     if (allowedFiletypes.includes(extname)) {
-      const key = `${destination}/${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
-
+      const timestamp = Date.now();
+      const originalExtension = path.extname(file.originalname).toLowerCase();
+      const key = `${destination}/${file.fieldname}-${timestamp}${originalExtension}`;
+  
+      const extensionsCount = key.split('.').length - 1;
+  
+      if (extensionsCount > 1) {
+        return cb('Error: Files with multiple extensions are not allowed!');
+      }
+  
       const sanitizedKey = key.replace(/(\.[^\/\.]+)+$/, '');
-
       const correctedKey = sanitizedKey.replace(/%2F/g, '/');
-
+  
       return cb(null, correctedKey);
     } else {
       return cb('Error: Images, Videos, and PDFs Only!');
     }
   }
+  
+  
 });
 
 function checkFileType(file, cb) {
   const allowedFiletypes = ['jpeg', 'jpg', 'png', 'gif',  'pdf'];
   const extname = path.extname(file.originalname).toLowerCase().replace('.', '');
 
-  const isScriptFile = ['.js', '.jsx', '.sh', '.bat', '.cmd'].includes(extname);
+  const isScriptFile = ['.js', '.jsx', '.sh', '.bat', '.cmd','.php','.sql','.py'].includes(extname);
 
   if (isScriptFile || !allowedFiletypes.includes(extname)) {
     return cb('Error: Images, Videos, and PDFs Only!');

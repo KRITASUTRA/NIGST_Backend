@@ -2,7 +2,7 @@ const { default: rateLimit } = require("express-rate-limit");
 const pool = require("../config/pool");
 
 const IPlimiter = rateLimit({
-  windowMs: 180000,
+  windowMs: 120000,
   limit: 5,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
@@ -21,6 +21,18 @@ const IPlimiter = rateLimit({
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   },
+});
+
+const LimitUpload = rateLimit({
+  windowMs: 180000,
+  limit: 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: 'Too many login attempts from this IP. Try again later.',
+  keyGenerator: function (req, res) {
+    return req.headers["x-forwarded-for"] || req.connection.remoteAddress || req.ip;
+  },
+ 
 });
 
 const checkBlockedIP = async (req, res, next) => {
@@ -74,4 +86,4 @@ async function blockUser(ip, blockedUntil, reason) {
   }
 }
 
-module.exports = { IPlimiter,checkBlockedIP };
+module.exports = { IPlimiter,checkBlockedIP,LimitUpload };
